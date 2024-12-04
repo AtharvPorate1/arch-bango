@@ -1,0 +1,435 @@
+'use client'
+
+import React, { useState, useEffect } from 'react'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Plus, Minus } from 'lucide-react'
+import { toast } from "sonner"
+
+type EventData = {
+  id: number
+  outcomes: {
+    id: number
+    outcome_title: string
+    current_supply: number
+    total_liquidity: number
+  }[]
+}
+
+type PriceData = {
+  outcomeId: number
+  title: string
+  price: number
+  currentSupply: number
+  totalLiquidity: number
+}
+
+type TradeComponentProps = {
+  eventData: EventData | null
+  isLoading: boolean
+  address: string | undefined
+  isDisconnected: boolean
+  isConnecting: boolean
+  setLastTradeTimestamp: React.Dispatch<React.SetStateAction<number>>
+}
+
+const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; setIsBuySelected: (value: boolean) => void; isDrawer?: boolean }> = ({
+  eventData,
+  isLoading,
+  address,
+  isDisconnected,
+  isConnecting,
+  setLastTradeTimestamp,
+  isBuySelected,
+  setIsBuySelected,
+  isDrawer = false
+}) => {
+  const [shares, setShares] = useState(10)
+  const [price, setPrice] = useState("10")
+  const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null)
+  const [outcomePrices, setOutcomePrices] = useState<PriceData[]>([])
+
+  useEffect(() => {
+    if (!eventData?.id) return
+
+    const fetchPrices = async () => {
+      try {
+        const response = await fetch(`https://backend-tkuv.onrender.com/v1/trades/${eventData.id}`)
+        if (!response.ok) throw new Error('Failed to fetch prices')
+        const data = await response.json()
+        setOutcomePrices(data)
+      } catch (error) {
+        console.error('Error fetching prices:', error)
+      }
+    }
+
+    fetchPrices()
+    const intervalId = setInterval(fetchPrices, 10000) // 10 seconds
+
+    return () => clearInterval(intervalId)
+  }, [eventData?.id])
+
+  const handleShareChange = (delta: number) => {
+    setShares(prev => Math.max(1, prev + delta))
+  }
+
+  const handlePricePreset = (amount: number) => {
+    setPrice(amount.toString())
+  }
+
+  const handlePlaceOrder = async () => {
+    if (!address || isDisconnected || !selectedOutcome || !eventData) {
+      console.error("Cannot place order: User not authenticated or outcome not selected")
+      return
+    }
+
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken) {
+      console.error("Access token not found")
+      return
+    }
+
+    const selectedOutcomeData = eventData.outcomes.find(o => o.outcome_title === selectedOutcome)
+    if (!selectedOutcomeData) {
+      console.error("Selected outcome not found in event data")
+      return
+    }
+
+    try {
+      const endpoint = isBuySelected ? 'https://backend-tkuv.onrender.com/v1/trades/buy' : 'https://backend-tkuv.onrender.com/v1/trades/sell'
+      const body = isBuySelected
+        ? {
+            eventId: eventData.id,
+            outcomeId: selectedOutcomeData.id,
+            usdtAmount: parseFloat(price)
+          }
+        : {
+            eventId: eventData.id,
+            outcomeId: selectedOutcomeData.id,
+            sharesToSell: shares
+          }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(body)
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to place order')
+      }
+
+      const data = await response.json()
+      console.log("Order placed successfully:", data)
+      toast.success("Order placed successfully")
+      setLastTradeTimestamp(Date.now())
+    } catch (error) {
+      console.error("Error placing order:", error)
+      toast.error("Some error occurred, order is not placed!")
+    }
+  }
+
+  const getOutcomePrice = (outcomeId: number) => {
+    const outcomePrice = outcomePrices.find(p => p.outcomeId === outcomeId)
+    return outcomePrice?.price || 0
+  }
+
+  const calculateSharePrice = (outcomeId: number) => {
+    return getOutcomePrice(outcomeId)
+  }
+
+  const calculateBuyPrice = (outcomeId: number) => {
+    const sharePrice = calculateSharePrice(outcomeId)
+    return (sharePrice * shares).toFixed(2)
+  }
+
+  return (
+    <Card className="bg-darkbg2 shadow-none border-none text-white">
+      <CardContent className="space-y-5 px-4">
+        {isLoading ? (
+          <>
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-4 w-3/4 mx-auto" />
+          </>
+        ) : address && !isDisconnected ? (
+          <>
+            {!isDrawer && (
+              <div className="grid grid-cols-2 bg-darkbg">
+                <Button 
+                  className={`w-full h-10 rounded-none scale-x-[1.07] md:-translate-x-2 font-medium hover:font-medium rounded-t-md ${isBuySelected ? 'bg-[#4ADE80] text-black' : 'bg-darkbg2 text-white'} hover:z-10 hover:bg-[#4ADE80] shadow-none`}
+                  onClick={() => setIsBuySelected(true)}
+                >
+                  BUY
+                </Button>
+                <Button 
+                  className={`w-full h-10 rounded-none scale-x-[1.07] md:translate-x-2 font-medium hover:font-medium ${!isBuySelected ? 'bg-[#F87171] text-black' : 'bg-darkbg2 text-white'} rounded-t-md shadow-none hover:bg-[#F87171]`}
+                  onClick={() => setIsBuySelected(false)}
+                >
+                  SELL
+                </Button>
+              </div>
+            )}
+            <div>
+              <h3 className="mb-2">Outcome</h3>
+              <div
+                className={` ${
+                  eventData?.outcomes.length >= 3 ? 'grid grid-cols-2 gap-2' : 'flex items-center gap-2'
+                }`}
+              >
+                {eventData?.outcomes.map((outcome, index) => (
+                  <Button
+                    key={outcome.id}
+                    className={`w-full py-5 bg-darkbg ${
+                      selectedOutcome === outcome.outcome_title
+                        ? index % 2 === 0
+                          ? 'bg-[#4ADE80] text-black hover:bg-[#4ADE80]'
+                          : 'bg-[#F87171] text-black hover:bg-[#F87171]'
+                        : index % 2 === 0
+                        ? 'text-[#4ADE80] hover:text-[#4ADE80] hover:bg-darkbg'
+                        : 'text-[#F87171] hover:bg-darkbg hover:text-[#F87171]'
+                    }`}
+                    onClick={() => setSelectedOutcome(outcome.outcome_title)}
+                  >
+                    <div className="flex gap-2 items-center">
+                      <span>{outcome.outcome_title}</span>
+                      <span className="text-xs flex">${calculateBuyPrice(outcome.id)}</span>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+            {isBuySelected ? (
+              <div>
+                <h3 className="mb-2">Price</h3>
+                <Input 
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="bg-darkbg border-none mb-2"
+                />
+                <div className="grid grid-cols-4 gap-1">
+                  <Button onClick={() => handlePricePreset(0)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    Reset
+                  </Button>
+                  <Button onClick={() => handlePricePreset(10)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    10 USDT
+                  </Button>
+                  <Button onClick={() => handlePricePreset(50)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    50 USDT
+                  </Button>
+                  <Button onClick={() => handlePricePreset(100)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    100 USDT
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h3 className="mb-2">Shares</h3>
+                <div className="flex justify-center flex-col">
+                  <Input 
+                    type="number"
+                    value={shares}
+                    onChange={(e) => setShares(parseInt(e.target.value) || 0)}
+                    className="bg-darkbg border-none mb-2 flex self-center"
+                  />       
+                  <p className="text-sm text-gray-400 mt-2">
+                    Current Price: ${calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0).toFixed(7)}
+                  </p>
+                  <div className="grid grid-cols-4 gap-1">
+                    <Button onClick={() => setShares(0)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                      Reset
+                    </Button>
+                    <Button onClick={() => setShares(Math.floor(shares * 0.1))} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                      10 %
+                    </Button>
+                    <Button onClick={() => setShares(Math.floor(shares * 0.5))} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                      50 %
+                    </Button>
+                    <Button onClick={() => setShares(shares)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                      100 %
+                    </Button>
+                  </div>          
+                </div>
+              </div>
+            )}
+            <div>
+              <p className="text-sm text-gray-400">
+                {isBuySelected 
+                  ? `${calculateSharePrice(eventData?.outcomes[0]?.id || 0).toFixed(7)} (Shares)` 
+                  : `${(parseFloat(price) * shares).toFixed(2)} USDT`}
+              </p>
+              <Button className="w-full bg-[#EC762E] hover:bg-orange-600 mt-2" onClick={handlePlaceOrder}>
+                Place Order
+              </Button>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Total</span>
+              <span>$ {isBuySelected ? (parseFloat(price) * shares).toFixed(2) : (calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)}</span>
+            </div>
+            {isBuySelected && (
+              <div className="flex justify-between text-sm">
+                <span>Potential Return</span>
+                <span className="text-green-500">$ {(calculateSharePrice(eventData?.outcomes[0]?.id || 0) * shares).toFixed(2)} ({((calculateSharePrice(eventData?.outcomes[0]?.id || 0) * shares / (parseFloat(price) * shares) - 1) * 100).toFixed(2)}%)</span>
+              </div>
+            )}
+            {!isBuySelected && (
+              <div className="flex justify-between text-sm">
+                <span>Potential Return</span>
+                <span className="text-red-500">$ {(calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)} ({((calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares / (parseFloat(price)) - 1) * 100).toFixed(2)}%)</span>
+              </div>
+            )}
+          </>
+        ) : isConnecting ? (
+          <div>Connecting...</div>
+        ) : (
+          <>
+            {!isDrawer && (
+              <div className="grid grid-cols-2 -translate-y-4">
+                <Button className="w-full text-[#8F8F8F] h-10 rounded-none scale-x-[1.07] md:-translate-x-2 font-medium hover:font-medium rounded-tl-md bg-darkbg2 hover:z-10 hover:bg-green-700 shadow-none">
+                  BUY
+                </Button>
+                <Button className="w-full h-10 text-[#8F8F8F] rounded-none scale-x-[1.07] md:translate-x-2 font-medium hover:font-medium bg-darkbg2 rounded-tr-md shadow-none hover:bg-red-600">
+                  SELL
+                </Button>
+              </div>
+            )}
+            <div>
+              <h3 className="mb-2">Outcome</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {eventData?.outcomes.map((outcome) => (
+                  <Button
+                    key={outcome.id}
+                    className={`w-full bg-[#0C0C0C] py-10 hover:text-[#0C0C0C] ${
+                      selectedOutcome === outcome.outcome_title
+                        ? 'text-white bg-green-600'
+                        : 'text-green-600 '
+                    }`}
+                    onClick={() => setSelectedOutcome(outcome.outcome_title)}
+                  >
+                    <div className="flex flex-col items-center">
+                      <span>{outcome.outcome_title}</span>
+                      <span className="text-xs">
+                        {`$${calculateBuyPrice(outcome.id)}`}
+                      </span>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="mb-2">Share</h3>
+              <div className="flex bg-[#0C0C0C] p-2 gap-1">
+                <Button onClick={() => handleShareChange(-1)} className="px-4 bg-[#313131] rounded-r-none">
+                  <Minus className="h-4 w-4" />
+                  <span className="sr-only">Decrease shares</span>
+                </Button>
+                <Input className="text-center bg-[#0C0C0C] border-none" value={shares} readOnly />
+                <Button onClick={() => handleShareChange(1)} className="px-4 bg-[#313131] rounded-l-none">
+                  <Plus className="h-4 w-4" />
+                  <span className="sr-only">Increase shares</span>
+                </Button>
+              </div>
+            </div>
+            <Button variant="link" className="w-full text-white">
+              Connect Wallet
+            </Button>
+          </>
+        )}
+        <p className="text-xs text-center text-gray-500">By trading you agree the terms of use</p>
+      </CardContent>
+    </Card>
+  )
+}
+
+const MobileTradeComponent: React.FC<TradeComponentProps> = (props) => {
+  const [isBuySelected, setIsBuySelected] = useState(true)
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-darkbg p-4 flex justify-around">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button className="w-[45%] bg-[#4ADE80] text-black">Buy</Button>
+        </SheetTrigger>
+        <SheetContent side="bottom" className="bg-darkbg2 text-white">
+          <TradeContent {...props} isBuySelected={true} setIsBuySelected={setIsBuySelected} isDrawer={true} />
+        </SheetContent>
+      </Sheet>
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button className="w-[45%] bg-[#F87171] text-black">Sell</Button>
+        </SheetTrigger>
+        <SheetContent side="bottom" className="bg-darkbg2 text-white">
+          <TradeContent {...props} isBuySelected={false} setIsBuySelected={setIsBuySelected} isDrawer={true} />
+        </SheetContent>
+      </Sheet>
+    </div>
+  )
+}
+
+export default function TradeComponent(props: TradeComponentProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkIfMobile = () => setIsMobile(window.innerWidth < 768)
+    checkIfMobile()
+    window.addEventListener('resize', checkIfMobile)
+    return () => window.removeEventListener('resize', checkIfMobile)
+  }, [])
+
+  const [isBuySelected, setIsBuySelected] = useState(true)
+
+  if (isMobile) {
+    return <MobileTradeComponent {...props} />
+  }
+
+  return (
+    <>
+      <TradeContent {...props} isBuySelected={isBuySelected} setIsBuySelected={setIsBuySelected} />
+      {props.address && !props.isDisconnected && (
+        <Card className="bg-darkbg2 border-none text-ow1 mt-4">
+          <CardHeader>
+            <CardTitle className="text-ow1 text-lg -mb-1">Your Position</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {props.isLoading ? (
+              <>
+                <Skeleton className="h-6 w-full mb-2" />
+                <Skeleton className="h-6 w-full mb-2" />
+                <Skeleton className="h-6 w-full" />
+              </>
+            ) : (
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="text-gray-500">
+                    <th className="px-4 py-1 text-o1 text-left">Vote</th>
+                    <th className="px-4 text-o1 text-center">Price</th>
+                    <th className="px-4 text-o1 text-right">Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {props.eventData?.outcomes.map((outcome) => (
+                    <tr key={outcome.id}>
+                      <td className="px-4 py-1 text-green-500">{outcome.outcome_title}</td>
+                      <td className="px-4 text-center">$ {(outcome.total_liquidity / outcome.current_supply).toFixed(2)}</td>
+                      {/* <td className="px-4 text-right">{outcome.current_supply.toFixed(3)}</td> */}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </>
+  )
+}
+

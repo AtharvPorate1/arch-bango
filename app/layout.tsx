@@ -1,0 +1,53 @@
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import Navbar from "@/components/_layout/Navbar";
+import ContextProvider from '@/context'
+import { headers } from "next/headers";
+import { Toaster } from "@/components/ui/sonner";
+import GoogleAnalytics from "@/lib/googleanalytics";
+
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+});
+const themeFont = localFont({
+  src: "./fonts/PixelEmulator.otf",
+  variable: "--font-theme",
+  weight: "100 900",
+});
+
+export const metadata: Metadata = {
+  title: "Bango",
+  description: "The best prediction",
+};
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const headersList = await headers();
+  const cookies = headersList.get('cookie');
+// console.log("Cookies on server",cookies)
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${themeFont.variable} antialiased`}
+      >
+        <ContextProvider cookies={cookies}>
+          <GoogleAnalytics GA_MEASUREMENT_ID="G-XZ9LL5NGH1"/>
+          <Navbar />
+          {children}
+          <Toaster richColors/>
+        </ContextProvider>
+      </body>
+    </html>
+  );
+}
