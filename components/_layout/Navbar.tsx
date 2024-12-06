@@ -43,7 +43,7 @@ const ConnectWallet = async () => {
       console.log("Wallet data saved to localStorage")
 
       // Make API call to get token
-      const apiResponse = await fetch('https://backend-tkuv.onrender.com/v1/auth/get-token', {
+      const apiResponse = await fetch('https://predictor-market.onrender.com/v1/auth/get-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
