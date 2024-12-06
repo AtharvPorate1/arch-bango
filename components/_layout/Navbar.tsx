@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from 'lucide-react'
@@ -80,9 +80,13 @@ const ConnectWallet = async () => {
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  // const [hasAccessToken, setHasAccessToken] = useState(!!localStorage.getItem('accessToken'));
-  const [username, setUsername] = useState(localStorage.getItem('username') || '');
-  const [isSigningMessage, setIsSigningMessage] = useState(false);
+  const [username, setUsername] = useState('')
+  const [isSigningMessage, setIsSigningMessage] = useState(false)
+
+  useEffect(() => {
+    // Access localStorage only after component mounts (client-side)
+    setUsername(localStorage.getItem('username') || '')
+  }, [])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
