@@ -24,7 +24,7 @@ const themeFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Bango",
+  title: "predictr.Market",
   description: "The best prediction",
 };
 

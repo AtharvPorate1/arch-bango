@@ -169,7 +169,7 @@ export default function EventDetailPage() {
 
   return (
     <>
-      <div className="flex md:justify-start justify-center items-start min-h-screen bg-darkbg text-ow1 dm-sans">
+      <div className="flex md:justify-start justify-center items-start min-h-screen bg-[#0c0c0c] text-ow1 dm-sans">
         <div className="w-full md:mt-6 md:w-[97%] flex flex-col md:flex-row gap-4 p-4">
           <div className="w-full md:w-[69.99%]">
             <Card className="bg-darkbg2 border-none text-ow1">

@@ -11,10 +11,10 @@ export default function Footer() {
               <div className="w-8 h-8 flex items-center justify-center">
                 <Image src="/logos/bango.png" alt='logo' height={40} width={40} />
               </div>
-              <span className="text-xl font-bold">BANGO</span>
+              <span className="text-xl font-bold">predictr.Market</span>
             </div>
             <div className="text-sm">
-              @Bango.Fun All Right Reserved 2024
+              @predictr.Market All Right Reserved 2024
             </div>
           </div>
           <div className="text-xs text-center md:text-right mt-4 md:mt-0 w-full md:w-auto">
