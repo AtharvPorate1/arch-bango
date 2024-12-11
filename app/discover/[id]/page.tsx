@@ -29,7 +29,11 @@ type EventData = {
     outcome_title: string
     current_supply: number
     total_liquidity: number
-  }[]
+  }[],
+  user:{
+    username:string
+  }
+
 }
 
 export default function EventDetailPage() {
@@ -106,6 +110,7 @@ export default function EventDetailPage() {
         throw new Error('Failed to fetch event data')
       }
       const data = await response.json()
+      console.log(data)
       setEventData(data)
       setIsLoading(false)
     } catch (error) {
@@ -180,12 +185,12 @@ export default function EventDetailPage() {
             <Card className="bg-darkbg2 rounded-none shadow-none border-none text-ow1 mb-4 w-full max-w-4xl md:max-w-full mx-auto">
               <CardHeader className="flex flex-col sm:flex-row items-start gap-4 p-4 sm:p-6">
                 {isLoading ? (
-                  <Skeleton className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg shrink-0" />
+                  <Skeleton className="h-40 w-40 rounded-lg shrink-0" />
                 ) : (
-                  <div
+                  <div 
                     className={`${
-                      isImageExpanded ? 'h-40 w-40' : 'h-20 w-20 sm:h-24 sm:w-24'
-                    } rounded-lg bg-purple-900 shrink-0 flex items-center justify-center cursor-pointer transition-all duration-300`}
+                      isImageExpanded ? 'h-40 w-40' : 'h-20 w-20'
+                    } rounded-lg bg-purple-900 shrink-0 flex items-center justify-center cursor-pointer `}
                     onClick={handleImageClick}
                   >
                     <Image
@@ -197,7 +202,7 @@ export default function EventDetailPage() {
                     />
                   </div>
                 )}
-                <div className={`flex-1 min-w-0 ${isImageExpanded ? 'mt-4 sm:mt-0 sm:ml-8' : ''}`}>
+                <div className={`flex-1 min-w-0 ${isImageExpanded ? '' : 'ml-4'}`}>
                   {isLoading ? (
                     <>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8 mb-2">
@@ -209,13 +214,14 @@ export default function EventDetailPage() {
                   ) : (
                     <>
                       <div className="flex flex-col dm-sans sm:flex-row sm:items-center gap-2 sm:gap-8 mb-2">
-                        <div className="text-sm text-[#89A2ED]">KryptoCnight</div>
+                        <div className="text-sm text-[#89A2ED]">{eventData?.user.username}</div>
                         <div className="text-sm text-[#89A2ED]">
                           Ends on {new Date(eventData?.expiry_date || '').toLocaleDateString()}
                           <span className="block sm:inline sm:ml-4 text-o1">Volume: $300k</span>
                         </div>
                       </div>
                       <CardTitle className="text-lg sm:text-xl break-words">{eventData?.question}</CardTitle>
+                      <p className="text-sm text-ow1 mt-2 break-words">{eventData?.description}</p>
                     </>
                   )}
                 </div>
@@ -239,8 +245,6 @@ export default function EventDetailPage() {
                   </>
                 ) : (
                   <>
-                    <p className="text-sm text-ow1 mb-4 break-words">{eventData?.description}</p>
-                    
                     <h3 className="font-semibold text-ow1 mb-2">Resolve</h3>
                     <p className="text-sm text-ow1 break-words">{eventData?.resolution_criteria}</p>
                   </>

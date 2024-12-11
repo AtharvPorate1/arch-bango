@@ -303,7 +303,7 @@ export default function Component({
                 <ThreadItem key={thread.id} {...thread} onReply={() => handleReply(thread.id)} />
               ))
             ) : (
-              <p className="text-ow1 p-4">No threads available.</p>
+              <p className="text-ow1 p-4"></p>
             )}
             
             <div className="flex w-1/2 justify-between p-0">
@@ -365,8 +365,8 @@ export default function Component({
             </div>
           </div>
         </TabsContent>
-        <TabsContent value="trades">Trades content</TabsContent>
-        <TabsContent value="holders">Holders content</TabsContent>
+        <TabsContent value="trades"></TabsContent>
+        <TabsContent value="holders"></TabsContent>
       </Tabs>
     </CardContent>
   </Card>

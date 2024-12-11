@@ -164,7 +164,7 @@ export default function Component() {
 
   const fetchData = async (page: number) => {
     try {
-      const response = await fetch(`https://backend-tkuv.onrender.com/v1/events?status=ACTIVE&sortBy=desc&limit=${ITEMS_PER_PAGE}&page=${page}`)
+      const response = await fetch(`https://backend-tkuv.onrender.com/v1/events?status=ACTIVE&sortBy=createdAt:desc&limit=${ITEMS_PER_PAGE}&page=${page}`)
       const data = await response.json()
       
       if (!Array.isArray(data)) {
