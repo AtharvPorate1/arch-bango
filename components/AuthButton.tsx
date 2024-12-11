@@ -16,7 +16,7 @@ export default function LoginButton() {
                   variant="ghost"
                   className="hidden md:inline-flex text-white border-white hover:bg-[#ff6600] hover:text-black transition-colors"
                 >
-                  [ Connect Wallet ]
+                  [ Connect Wallet  ]
                 </Button>
               
   );
