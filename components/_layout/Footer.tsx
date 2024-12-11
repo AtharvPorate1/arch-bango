@@ -8,10 +8,10 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start">
           <div className="flex flex-col items-center md:items-start space-y-2 w-full md:w-auto">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 flex items-center justify-center">
-                <Image src="/logos/bango.png" alt='logo' height={40} width={40} />
+              <div className="w-48 h-48 translate-y-5 flex items-center justify-center">
+                <Image src="/plogo.png" alt='logo' height={10} width={200} />
               </div>
-              <span className="text-xl font-bold">predictr.Market</span>
+              {/* <span className="text-xl font-bold">predictr.Market</span> */}
             </div>
             <div className="text-sm">
               @predictr.Market All Right Reserved 2024
