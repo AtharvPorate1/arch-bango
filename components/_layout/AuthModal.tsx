@@ -8,6 +8,7 @@ import Wallet, { AddressPurpose } from 'sats-connect'
 import { request, RpcErrorCode } from "sats-connect"
 import { toast } from 'sonner'
 import EditProfileModal from './EditProfileModal'
+import { useWallet } from '@/hooks/useWallet'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -22,9 +23,10 @@ const formatAddress = (address: string) => {
 }
 
 // Custom hook for wallet functionality
-const useWallet = (setUsername: (username: string) => void) => {
+const useWallet2 = (setUsername: (username: string) => void) => {
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [walletAddress, setWalletAddress] = useState('')
+  const wallet = useWallet();
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken')
@@ -37,11 +39,8 @@ const useWallet = (setUsername: (username: string) => void) => {
 
   const connectWallet = useCallback(async () => {
     try {
-      const response = await Wallet.request('getAccounts', {
-        purposes: [AddressPurpose.Payment, AddressPurpose.Ordinals, AddressPurpose.Stacks],
-        message: 'Cool app wants to know your addresses!',
-      })
-      const address = response.result[1].address
+      await wallet.connect();
+      const address = wallet.address!;
       setWalletAddress(address)
       localStorage.setItem("walletAddress", address)
       
@@ -114,7 +113,7 @@ const useWallet = (setUsername: (username: string) => void) => {
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername = "KryptoNight" }) => {
   const [username, setUsername] = useState(initialUsername)
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
-  const { isWalletConnected, walletAddress, connectWallet, disconnectWallet } = useWallet(setUsername)
+  const { isWalletConnected, walletAddress, connectWallet, disconnectWallet } = useWallet2(setUsername)
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username')
