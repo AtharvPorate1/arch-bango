@@ -6,7 +6,6 @@ import { Line } from 'react-chartjs-2'
 import { Button } from "@/components/ui/button"
 import { RefreshCcw, Settings } from 'lucide-react'
 import { Circle } from 'lucide-react'
-import { Checkbox } from "@/components/ui/checkbox"
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -32,21 +31,18 @@ export default function PredictionMarketChart({id}: {id: number}) {
   const [chartData, setChartData] = useState<Outcome[]>([])
   const [displayedChartData, setDisplayedChartData] = useState<Outcome[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [selectedOutcomes, setSelectedOutcomes] = useState<number[]>([])
+  const [currentOutcomeIndex, setCurrentOutcomeIndex] = useState(0)
   const [outcomeColors, setOutcomeColors] = useState<Record<number, string>>({})
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`https://backend-tkuv.onrender.com/v1/graph?eventID=${id}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}graph/interval-less?eventID=${id}`)
       if (!response.ok) {
         throw new Error('Failed to fetch data')
       }
       const data = await response.json()
       setChartData(data)
-      if (selectedOutcomes.length === 0) {
-        setSelectedOutcomes(data.map((outcome: Outcome) => outcome.outcome.id))
-      }
       if (Object.keys(outcomeColors).length === 0) {
         const newColors = data.reduce((acc: Record<number, string>, outcome: Outcome, index: number) => {
           acc[outcome.outcome.id] = colors[index % colors.length]
@@ -106,54 +102,26 @@ export default function PredictionMarketChart({id}: {id: number}) {
   const formatChartData = () => {
     if (!displayedChartData.length) return null
 
-    const labels = [...new Set(displayedChartData.flatMap(outcome => 
-      outcome.data.map(d => new Date(d.createdAt).toLocaleString())
-    ))].sort()
+    const currentOutcome = displayedChartData[currentOutcomeIndex]
+    if (!currentOutcome) return null
 
-    const datasets = displayedChartData
-      .filter(outcome => selectedOutcomes.includes(outcome.outcome.id))
-      .map((outcome) => {
-        const data = labels.map(label => {
-          const dataPoint = outcome.data.find(d => new Date(d.createdAt).toLocaleString() === label)
-          return dataPoint ? parseFloat(dataPoint.afterPrice) * 100 : null
-        })
+    const labels = currentOutcome.data.map(d => new Date(d.createdAt).toLocaleString())
 
-        // Interpolate missing values
-        let lastValidValue = null
-        for (let i = 0; i < data.length; i++) {
-          if (data[i] !== null) {
-            lastValidValue = data[i]
-          } else if (lastValidValue !== null) {
-            let nextValidIndex = data.findIndex((val, index) => index > i && val !== null)
-            if (nextValidIndex !== -1) {
-              const nextValidValue = data[nextValidIndex]
-              const step = (nextValidValue - lastValidValue) / (nextValidIndex - i + 1)
-              for (let j = i; j < nextValidIndex; j++) {
-                data[j] = lastValidValue + step * (j - i + 1)
-              }
-              i = nextValidIndex - 1
-            } else {
-              data[i] = lastValidValue
-            }
-          }
-        }
+    const dataset = {
+      label: currentOutcome.outcome.outcome_title,
+      data: currentOutcome.data.map(d => parseFloat(d.afterPrice) * 100),
+      borderColor: outcomeColors[currentOutcome.outcome.id],
+      backgroundColor: 'transparent',
+      tension: 0.4,
+      fill: false,
+      borderWidth: 1.5,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      pointHoverBackgroundColor: outcomeColors[currentOutcome.outcome.id],
+      pointHoverBorderColor: outcomeColors[currentOutcome.outcome.id],
+    }
 
-        return {
-          label: outcome.outcome.outcome_title,
-          data: data,
-          borderColor: outcomeColors[outcome.outcome.id],
-          backgroundColor: 'transparent',
-          tension: 0.4,
-          fill: false,
-          borderWidth: 1.5,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-          pointHoverBackgroundColor: outcomeColors[outcome.outcome.id],
-          pointHoverBorderColor: outcomeColors[outcome.outcome.id],
-        }
-      })
-
-    return { labels, datasets }
+    return { labels, datasets: [dataset] }
   }
 
   const options: ChartOptions<'line'> = {
@@ -198,7 +166,6 @@ export default function PredictionMarketChart({id}: {id: number}) {
         },
         grid: {
           color: 'rgba(75, 85, 99, 0.1)',
-          drawBorder: false,
         },
         ticks: {
           color: '#4B5563',
@@ -241,15 +208,7 @@ export default function PredictionMarketChart({id}: {id: number}) {
   }
 
   const handleRefresh = () => {
-    fetchData()
-  }
-
-  const toggleOutcome = (outcomeId: number) => {
-    setSelectedOutcomes(prev => 
-      prev.includes(outcomeId)
-        ? prev.filter(id => id !== outcomeId)
-        : [...prev, outcomeId]
-    )
+    setCurrentOutcomeIndex((prevIndex) => (prevIndex + 1) % displayedChartData.length)
   }
 
   if (error) {
@@ -272,7 +231,7 @@ export default function PredictionMarketChart({id}: {id: number}) {
 
   return (
     <div className="rounded-lg bg-[#0C0C0C] mb-2 p-4">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
         <div className="flex items-center gap-3">
           <Circle className="w-3 h-3 fill-orange-400 text-orange-400" />
           <div className="flex items-center gap-2">
@@ -280,7 +239,7 @@ export default function PredictionMarketChart({id}: {id: number}) {
             <span className="text-gray-500 text-sm">Ending On 04 Nov, 2024</span>
           </div>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-wrap">
           {timePeriods.map((period) => (
             <Button
               key={period}
@@ -320,23 +279,16 @@ export default function PredictionMarketChart({id}: {id: number}) {
         <Line data={data} options={options} />
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-4">
-        {chartData.map((outcome) => (
-          <div key={outcome.outcome.id} className="flex items-center">
-            <Checkbox
-              id={`outcome-${outcome.outcome.id}`}
-              checked={selectedOutcomes.includes(outcome.outcome.id)}
-              onCheckedChange={() => toggleOutcome(outcome.outcome.id)}
-            />
-            <label
-              htmlFor={`outcome-${outcome.outcome.id}`}
-              className="ml-2 text-sm font-medium text-gray-300"
-              style={{ color: outcomeColors[outcome.outcome.id] }}
-            >
-              {outcome.outcome.outcome_title}
-            </label>
-          </div>
-        ))}
+      <div className="mt-4">
+        <div className="flex items-center">
+          <div
+            className="w-4 h-4 rounded-full mr-2"
+            style={{ backgroundColor: outcomeColors[displayedChartData[currentOutcomeIndex]?.outcome.id] }}
+          ></div>
+          <span className="text-sm font-medium text-gray-300">
+            {displayedChartData[currentOutcomeIndex]?.outcome.outcome_title}
+          </span>
+        </div>
       </div>
     </div>
   )

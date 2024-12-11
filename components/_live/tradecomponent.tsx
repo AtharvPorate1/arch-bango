@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Plus, Minus } from 'lucide-react'
+
 import { toast } from "sonner"
 
 type EventData = {
@@ -57,9 +57,10 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
 
     const fetchPrices = async () => {
       try {
-        const response = await fetch(`https://backend-tkuv.onrender.com/v1/trades/${eventData.id}`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}trades/${eventData.id}`)
         if (!response.ok) throw new Error('Failed to fetch prices')
         const data = await response.json()
+        console.log(data)
         setOutcomePrices(data)
       } catch (error) {
         console.error('Error fetching prices:', error)
@@ -83,12 +84,14 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
   const handlePlaceOrder = async () => {
     if (!address || isDisconnected || !selectedOutcome || !eventData) {
       console.error("Cannot place order: User not authenticated or outcome not selected")
+      toast.error("Please connect your wallet to place an order")
       return
     }
 
     const accessToken = localStorage.getItem('accessToken')
     if (!accessToken) {
       console.error("Access token not found")
+      toast.error("Please connect your wallet")
       return
     }
 
@@ -99,7 +102,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
     }
 
     try {
-      const endpoint = isBuySelected ? 'https://backend-tkuv.onrender.com/v1/trades/buy' : 'https://backend-tkuv.onrender.com/v1/trades/sell'
+      const endpoint = isBuySelected ? `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/buy` : `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/sell`
       const body = isBuySelected
         ? {
             eventId: eventData.id,
@@ -146,7 +149,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
 
   const calculateBuyPrice = (outcomeId: number) => {
     const sharePrice = calculateSharePrice(outcomeId)
-    return (sharePrice * shares).toFixed(2)
+    return (sharePrice).toFixed(2)
   }
 
   return (
@@ -160,18 +163,18 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-4 w-3/4 mx-auto" />
           </>
-        ) : address && !isDisconnected ? (
+        ) : (
           <>
             {!isDrawer && (
               <div className="grid grid-cols-2 bg-darkbg">
                 <Button 
-                  className={`w-full h-10 rounded-none scale-x-[1.07] md:-translate-x-2 font-medium hover:font-medium rounded-t-md ${isBuySelected ? 'bg-[#4ADE80] text-black' : 'bg-darkbg2 text-white'} hover:z-10 hover:bg-[#4ADE80] shadow-none`}
+                  className={`w-full h-10 rounded-none scale-x-[1.07] md:-translate-x-2 font-medium hover:font-medium rounded-t-md ${isBuySelected ? 'bg-[#4ADE80] text-black' : 'bg-darkbg2 text-white hover:text-black'} hover:z-10 hover:bg-[#4ADE80] shadow-none`}
                   onClick={() => setIsBuySelected(true)}
                 >
                   BUY
                 </Button>
                 <Button 
-                  className={`w-full h-10 rounded-none scale-x-[1.07] md:translate-x-2 font-medium hover:font-medium ${!isBuySelected ? 'bg-[#F87171] text-black' : 'bg-darkbg2 text-white'} rounded-t-md shadow-none hover:bg-[#F87171]`}
+                  className={`w-full h-10 rounded-none scale-x-[1.07] md:translate-x-2 font-medium hover:font-medium ${!isBuySelected ? 'bg-[#F87171] text-black' : 'bg-darkbg2 text-white hover:text-black'} rounded-t-md shadow-none hover:bg-[#F87171]`}
                   onClick={() => setIsBuySelected(false)}
                 >
                   SELL
@@ -267,8 +270,12 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
                   ? `${calculateSharePrice(eventData?.outcomes[0]?.id || 0).toFixed(7)} (Shares)` 
                   : `${(parseFloat(price) * shares).toFixed(2)} USDT`}
               </p>
-              <Button className="w-full bg-[#EC762E] hover:bg-orange-600 mt-2" onClick={handlePlaceOrder}>
-                Place Order
+              <Button 
+                className="w-full bg-[#EC762E] hover:bg-orange-600 mt-2" 
+                onClick={handlePlaceOrder}
+                disabled={!address || isDisconnected}
+              >
+                {address && !isDisconnected ? 'Place Order' : 'Connect Wallet'}
               </Button>
             </div>
             <div className="flex justify-between text-sm">
@@ -287,61 +294,6 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
                 <span className="text-red-500">$ {(calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)} ({((calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares / (parseFloat(price)) - 1) * 100).toFixed(2)}%)</span>
               </div>
             )}
-          </>
-        ) : isConnecting ? (
-          <div>Connecting...</div>
-        ) : (
-          <>
-            {!isDrawer && (
-              <div className="grid grid-cols-2 -translate-y-4">
-                <Button className="w-full text-[#8F8F8F] h-10 rounded-none scale-x-[1.07] md:-translate-x-2 font-medium hover:font-medium rounded-tl-md bg-darkbg2 hover:z-10 hover:bg-green-700 shadow-none">
-                  BUY
-                </Button>
-                <Button className="w-full h-10 text-[#8F8F8F] rounded-none scale-x-[1.07] md:translate-x-2 font-medium hover:font-medium bg-darkbg2 rounded-tr-md shadow-none hover:bg-red-600">
-                  SELL
-                </Button>
-              </div>
-            )}
-            <div>
-              <h3 className="mb-2">Outcome</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {eventData?.outcomes.map((outcome) => (
-                  <Button
-                    key={outcome.id}
-                    className={`w-full bg-[#0C0C0C] py-10 hover:text-[#0C0C0C] ${
-                      selectedOutcome === outcome.outcome_title
-                        ? 'text-white bg-green-600'
-                        : 'text-green-600 '
-                    }`}
-                    onClick={() => setSelectedOutcome(outcome.outcome_title)}
-                  >
-                    <div className="flex flex-col items-center">
-                      <span>{outcome.outcome_title}</span>
-                      <span className="text-xs">
-                        {`$${calculateBuyPrice(outcome.id)}`}
-                      </span>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="mb-2">Share</h3>
-              <div className="flex bg-[#0C0C0C] p-2 gap-1">
-                <Button onClick={() => handleShareChange(-1)} className="px-4 bg-[#313131] rounded-r-none">
-                  <Minus className="h-4 w-4" />
-                  <span className="sr-only">Decrease shares</span>
-                </Button>
-                <Input className="text-center bg-[#0C0C0C] border-none" value={shares} readOnly />
-                <Button onClick={() => handleShareChange(1)} className="px-4 bg-[#313131] rounded-l-none">
-                  <Plus className="h-4 w-4" />
-                  <span className="sr-only">Increase shares</span>
-                </Button>
-              </div>
-            </div>
-            <Button variant="link" className="w-full text-white">
-              Connect Wallet
-            </Button>
           </>
         )}
         <p className="text-xs text-center text-gray-500">By trading you agree the terms of use</p>
@@ -394,41 +346,41 @@ export default function TradeComponent(props: TradeComponentProps) {
   return (
     <>
       <TradeContent {...props} isBuySelected={isBuySelected} setIsBuySelected={setIsBuySelected} />
-      {props.address && !props.isDisconnected && (
-        <Card className="bg-darkbg2 border-none text-ow1 mt-4">
-          <CardHeader>
-            <CardTitle className="text-ow1 text-lg -mb-1">Your Position</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {props.isLoading ? (
-              <>
-                <Skeleton className="h-6 w-full mb-2" />
-                <Skeleton className="h-6 w-full mb-2" />
-                <Skeleton className="h-6 w-full" />
-              </>
-            ) : (
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="text-gray-500">
-                    <th className="px-4 py-1 text-o1 text-left">Vote</th>
-                    <th className="px-4 text-o1 text-center">Price</th>
-                    <th className="px-4 text-o1 text-right">Quantity</th>
+      <Card className="bg-darkbg2 border-none text-ow1 mt-4">
+        <CardHeader>
+          <CardTitle className="text-ow1 text-lg -mb-1">Your Position</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {props.isLoading ? (
+            <>
+              <Skeleton className="h-6 w-full mb-2" />
+              <Skeleton className="h-6 w-full mb-2" />
+              <Skeleton className="h-6 w-full" />
+            </>
+          ) : props.address && !props.isDisconnected ? (
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="text-gray-500">
+                  <th className="px-4 py-1 text-o1 text-left">Vote</th>
+                  <th className="px-4 text-o1 text-center">Price</th>
+                  <th className="px-4 text-o1 text-right">Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {props.eventData?.outcomes.map((outcome) => (
+                  <tr key={outcome.id}>
+                    <td className="px-4 py-1 text-green-500">{outcome.outcome_title}</td>
+                    {/* <td className="px-4 text-center">$ {(outcome.total_liquidity / outcome.current_supply).toFixed(2)}</td> */}
+                    {/* <td className="px-4 text-right">{outcome.current_supply.toFixed(3)}</td> */}
                   </tr>
-                </thead>
-                <tbody>
-                  {props.eventData?.outcomes.map((outcome) => (
-                    <tr key={outcome.id}>
-                      <td className="px-4 py-1 text-green-500">{outcome.outcome_title}</td>
-                      <td className="px-4 text-center">$ {(outcome.total_liquidity / outcome.current_supply).toFixed(2)}</td>
-                      {/* <td className="px-4 text-right">{outcome.current_supply.toFixed(3)}</td> */}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </CardContent>
-        </Card>
-      )}
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="text-center text-gray-500">Connect your wallet to view your position</p>
+          )}
+        </CardContent>
+      </Card>
     </>
   )
 }

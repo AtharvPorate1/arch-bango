@@ -1,37 +1,175 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { PenSquare } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface UserData {
+  id: number
+  username: string
+  about: string
+  wallet_address: string
+  profile_pic: string
+  playmoney: number
+  createdAt: string
+  updatedAt: string
+}
 
 interface EditProfileModalProps {
   isOpen: boolean
   onClose: () => void
-  username?: string
-  bio?: string
 }
 
-const EditProfileModal: React.FC<EditProfileModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  username: initialUsername = "", 
-  bio: initialBio = "" 
-}) => {
-  const [username, setUsername] = useState(initialUsername)
-  const [bio, setBio] = useState(initialBio)
+const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) => {
+  const [userData, setUserData] = useState<UserData | null>(null)
+  const [username, setUsername] = useState("")
+  const [bio, setBio] = useState("")
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSave = async () => {
-    // Here you would typically handle the save operation
-    onClose()
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const accessToken = localStorage.getItem('accessToken')
+      if (!accessToken) {
+        console.error('No access token found')
+        toast.error('Authentication error. Please log in again.')
+        return
+      }
+
+      try {
+        // Use wallet address instead of username to fetch user data
+        const walletAddress = localStorage.getItem('walletAddress')
+        if (!walletAddress) {
+          throw new Error('No wallet address found in localStorage')
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}users?wallet_address=${walletAddress}&limit=10&page=1`, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data')
+        }
+
+        const data = await response.json()
+        if (data && data.length > 0) {
+          const userData = data[0]
+          setUserData(userData)
+          // Preserve the current username from localStorage
+          const storedUsername = localStorage.getItem('username') || userData.username
+          setUsername(storedUsername)
+          setBio(userData.about || "")
+          setUploadedImageUrl(userData.profile_pic || "")
+        } else {
+          throw new Error('No user data found')
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+        toast.error('Failed to load user data')
+      }
+    }
+
+    if (isOpen) {
+      fetchUserData()
+    }
+  }, [isOpen])
+
+  const uploadImage = async (accessToken: string, image: File) => {
+    const formData = new FormData()
+    formData.append('image', image)
+    formData.append('type', 'events')
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to upload image')
+    }
+
+    const data = await response.json()
+    return data.url
   }
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSave = async () => {
+    setIsLoading(true)
+    try {
+      const accessToken = localStorage.getItem('accessToken')
+      if (!accessToken) {
+        throw new Error('No access token found')
+      }
+
+      const updatedData: { username?: string; about?: string; profile_pic?: string } = {}
+      
+      if (username !== userData?.username) updatedData.username = username
+      if (bio !== userData?.about) updatedData.about = bio
+      if (uploadedImageUrl !== userData?.profile_pic) updatedData.profile_pic = uploadedImageUrl
+
+      if (Object.keys(updatedData).length === 0) {
+        toast.info('No changes to save')
+        onClose()
+        return
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}users`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile')
+      }
+
+      // Update localStorage with the new username
+      if (updatedData.username) {
+        localStorage.setItem('username', updatedData.username)
+      }
+
+      toast.success('Profile updated successfully')
+      onClose()
+    } catch (error) {
+      console.error('Error saving profile:', error)
+      toast.error('Failed to save profile')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setProfilePhoto(e.target.files[0])
+      setIsLoading(true)
+      try {
+        const file = e.target.files[0]
+        const accessToken = localStorage.getItem('accessToken')
+        if (!accessToken) {
+          throw new Error('No access token found')
+        }
+
+        const imageUrl = await uploadImage(accessToken, file)
+        setProfilePhoto(file)
+        setUploadedImageUrl(imageUrl)
+        toast.success('Image uploaded successfully')
+      } catch (error) {
+        console.error('Error uploading image:', error)
+        toast.error('Failed to upload image')
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -51,11 +189,18 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 accept="image/*"
                 onChange={handlePhotoUpload}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={isLoading}
               />
               {profilePhoto ? (
                 <img
                   src={URL.createObjectURL(profilePhoto)}
                   alt="Profile preview"
+                  className="absolute inset-0 w-full h-full object-cover rounded-sm"
+                />
+              ) : uploadedImageUrl ? (
+                <img
+                  src={uploadedImageUrl}
+                  alt="Current profile"
                   className="absolute inset-0 w-full h-full object-cover rounded-sm"
                 />
               ) : (
@@ -91,8 +236,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
           <Button 
             onClick={handleSave}
             className="w-full bg-[#EC762E] hover:bg-[#ff8533] text-darkbg2 mt-4"
+            disabled={isLoading}
           >
-            Save Changes
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </DialogContent>
@@ -101,4 +247,3 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 }
 
 export default EditProfileModal
-
