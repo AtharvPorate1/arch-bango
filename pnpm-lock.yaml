@@ -77,6 +77,9 @@ importers:
       '@web3modal/wagmi':
         specifier: ^5.1.11
         version: 5.1.11(fu45qkbnrwoqxkjvl4wzzwid64)
+      borsh:
+        specifier: ^2.0.0
+        version: 2.0.0
       chart.js:
         specifier: ^4.4.6
         version: 4.4.7

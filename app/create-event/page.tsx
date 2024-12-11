@@ -9,6 +9,12 @@ import { Label } from "@/components/ui/label"
 import { Info } from "lucide-react"
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { PROGRAM_PUBKEY } from "@/app/constants";
+import { Instruction, Message, MessageUtil, PubkeyUtil, RpcConnection } from "@saturnbtcio/arch-sdk";
+import * as borsh from 'borsh';
+import { useAtom } from 'jotai'
+import { clientAtom } from '../atom/global.atom'
+import { useWallet } from '@/hooks/useWallet'
 // import { useToast } from '@/hooks/use-toast'
 
 
@@ -21,7 +27,9 @@ export default function Component() {
   const [endDate, setEndDate] = useState('')
   const [endTime, setEndTime] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+  const accountPubkey = PubkeyUtil.fromHex(process.env.NEXT_PUBLIC_EVENT_ACCOUNT_PUBKEY!);
+  const client = new RpcConnection(process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:9002");
+  const wallet = useWallet();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -92,6 +100,69 @@ export default function Component() {
       if (!response.ok) {
         throw new Error('Failed to create event')
       }
+
+      const jsn: any = await response.json();
+
+
+
+      // Web3 Code
+
+      const uniqueId = new Uint8Array(32).fill(0); // Fill with your ID bytes
+      const uniqueIdBytes = new TextEncoder().encode((jsn.unique_id as string).replace("-",""));
+      uniqueId.set(uniqueIdBytes.slice(0, 32));
+
+      const schema = {
+        struct: {
+          function_number: 'u8',
+          unique_id: { array: { type: 'u8', len: 32 } },
+          expiry_timestamp: 'u32',
+          num_outcomes: 'u8',
+        }
+      };
+      
+  
+      const data = {
+        function_number: 1,
+        unique_id: Array.from(uniqueId),
+        expiry_timestamp: Math.floor(expiryDate.getTime() / 1000), // Convert to Unix timestamp (seconds),
+        num_outcomes: outcomes.length,
+      };
+
+      const instruction: Instruction = {
+        program_id: PubkeyUtil.fromHex(PROGRAM_PUBKEY!),
+        accounts: [
+          {
+            pubkey: accountPubkey,
+            is_signer: false,
+            is_writable: true
+          },
+          {
+            pubkey: PubkeyUtil.fromHex(wallet.publicKey!),
+            is_signer: true,
+            is_writable: false
+          }
+        ],
+        data: borsh.serialize(schema, data),
+      };
+
+
+      const messageObj: Message = {
+        signers: [PubkeyUtil.fromHex(wallet.publicKey!)],
+        instructions: [instruction],
+      };
+
+      const messageHash = MessageUtil.hash(messageObj);
+      const signature = await wallet.signMessage(Buffer.from(messageHash).toString('hex'));
+      const signatureBytes = new Uint8Array(Buffer.from(signature, 'base64')).slice(2);
+
+      const result = await client.sendTransaction({
+        version: 0,
+        signatures: [signatureBytes],
+        message: messageObj,
+      });
+
+
+      console.log(result);
 
       toast.success("Event created succesfully, Check discover Page")
       
