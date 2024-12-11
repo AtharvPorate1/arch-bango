@@ -34,7 +34,7 @@ const navigationItems = [
   { label: "IPL", variant: "ghost" as const },
   { label: "Top Test Cricketer", variant: "ghost" as const },
   { label: "WTC FINALS", variant: "ghost" as const },
-  { label: "Chil Fuck Guy", variant: "ghost" as const },
+  { label: "Chill Guy", variant: "ghost" as const },
   { label: "Friday Sale LIVE", variant: "ghost" as const },
 ]
 

@@ -23,6 +23,13 @@ export type CardData = {
   }[]
   description: string
   createdAt: Date
+  user:{
+    username:string
+  }
+  _count:{
+    threads:number
+    trades:number
+  }
 }
 
 
@@ -31,7 +38,10 @@ export const PredictionCard: React.FC<CardData> = ({
   image, 
   question, 
   outcomes, 
-  description 
+  description ,
+  _count,
+  // trades,
+  // username
 }) => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
   const [showTooltip, setShowTooltip] = useState(false)
@@ -99,7 +109,7 @@ export const PredictionCard: React.FC<CardData> = ({
                   <div className="flex items-center gap-2">
                     <span className="flex items-center gap-1">
                       <MessageSquare className="h-3 w-3" />
-                      300
+                      {_count.threads}
                     </span>
                     <Star className="h-3 w-3" />
                   </div>
@@ -166,7 +176,7 @@ export default function Component() {
     try {
       const response = await fetch(`https://backend-tkuv.onrender.com/v1/events?status=ACTIVE&sortBy=createdAt:desc&limit=${ITEMS_PER_PAGE}&page=${page}`)
       const data = await response.json()
-      
+      console.log(data)
       if (!Array.isArray(data)) {
         throw new Error('Unexpected API response format')
       }
