@@ -6,10 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ExternalLink, Users, MessageSquare } from 'lucide-react'
 import Link from "next/link"
 import Image from "next/image"
-import { useAccount } from "wagmi"
 import { useEffect, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useWallet } from "@/hooks/useWallet"
 
 interface UserData {
   id?: number
@@ -48,8 +48,8 @@ interface Event {
 }
 
 const GetWalletAddress = (): string | undefined => {
-  const { address } = useAccount()
-  return address
+  const wallet = useWallet();
+  return wallet.address!
 }
 
 const PredictionCard: React.FC<Event & { showEndButton: boolean }> = ({ id, image, question, outcomes, description, showEndButton }) => {

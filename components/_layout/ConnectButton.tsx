@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { useAccount } from 'wagmi'
 import { request } from 'sats-connect'
 import AuthModal from './AuthModal'
+import { useWallet } from '@/hooks/useWallet'
 
 function ConnectButton(): JSX.Element {
-  const { address } = useAccount()
+  const wallet = useWallet()
+  const address = wallet.address;
   const [username, setUsername] = useState(() => localStorage.getItem('username') || "connect wallet")
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authenticated, setAuthenticated] = useState(() => !!localStorage.getItem('username'))
