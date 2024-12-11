@@ -62,7 +62,7 @@ function ConnectButton(): JSX.Element {
     <div>
       <div
         onClick={handleAppkit}
-        className='flex hover:cursor-pointer self-center dm-sans font-bold text-black py-2 px-4 rounded-md bg-o1'
+        className='flex hover:cursor-pointer text-sm sm:text-lg self-center dm-sans md:font-bold text-black md:py-2 md:px-4 font-medium py-1 px-2 rounded-sm md:rounded-md bg-o1'
       >
         [ {username} ]
       </div>

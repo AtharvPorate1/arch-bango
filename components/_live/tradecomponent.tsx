@@ -224,13 +224,13 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
                     Reset
                   </Button>
                   <Button onClick={() => handlePricePreset(10)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    10 USDT
+                    10 SATS
                   </Button>
                   <Button onClick={() => handlePricePreset(50)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    50 USDT
+                    50 SATS
                   </Button>
                   <Button onClick={() => handlePricePreset(100)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    100 USDT
+                    100 SAT
                   </Button>
                 </div>
               </div>
@@ -268,7 +268,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
               <p className="text-sm text-gray-400">
                 {isBuySelected 
                   ? `${calculateSharePrice(eventData?.outcomes[0]?.id || 0).toFixed(7)} (Shares)` 
-                  : `${(parseFloat(price) * shares).toFixed(2)} USDT`}
+                  : `${(parseFloat(price) * shares).toFixed(2)} SATS`}
               </p>
               <Button 
                 className="w-full bg-[#EC762E] hover:bg-orange-600 mt-2" 
