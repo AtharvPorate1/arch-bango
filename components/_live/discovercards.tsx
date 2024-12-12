@@ -93,8 +93,8 @@ export const PredictionCard: React.FC<CardData> = ({
                         variant="ghost"
                         className={`h-10 text-sm font-medium w-full transition-colors duration-200 ${
                           index % 2 === 0 
-                            ? 'bg-[#1F2133] group-hover:bg-[#1F4A37] text-[#4ADE80]' 
-                            : 'bg-[#1F2133] group-hover:bg-[#482D33] text-[#F87171]'
+                            ? 'bg-[#1F2133] group-hover:bg-[#1F4A37] hover:text-[#4ADE80] text-[#4ADE80]' 
+                            : 'bg-[#1F2133] group-hover:bg-[#482D33] hover:text-[#F87171] text-[#F87171]'
                         }`}
                       >
                         Buy {outcome.outcome_title} {index % 2 === 0 ? '↑' : '↓'}
