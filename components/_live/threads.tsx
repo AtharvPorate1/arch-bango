@@ -203,9 +203,7 @@ export default function Component({
     return (
       <div className="mb-2 px-1  bg-darkbg2">
         <div className="flex items-center gap-2 ">
-          <span>
-            <Image src="/chill guy.webp" alt="chill guy"  width={40} height={40}/>
-          </span>
+        
           <span className={`font-bold text-xs text-[#151419]  px-[0.1rem] rounded ${userBgColor}`}>{user.username}</span>
           <span className="text-gray-400 text-xs">{new Date(createdAt).toLocaleTimeString()}</span>
           <button 
