@@ -9,6 +9,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { ChevronRight, Search } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import Image from 'next/image'
 
 type CardData = {
   id: number
@@ -106,31 +107,57 @@ export default function DiscoverSection() {
       {/* Promotional Cards */}
       <div className="grid grid-cols-1 dm-sans  md:grid-cols-3 gap-4 max-w-7xl mx-auto w-full">
         <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4">
-          <div className="w-24 h-24 bg-green-400 rounded-lg" />
+        <div className="w-24 h-24 rounded-lg overflow-hidden">
+            <Image
+              src="/main/trump.jpg"
+              alt="elon"
+              className="object-cover w-full h-full"
+              width={400}
+              height={400}
+            />
+          </div>
           <div className="flex flex-col gap-2 flex-1">
-            <h3 className="text-ow1 dm-sans text-lg font-medium">INDIA 2025 Main Elections Forecast ?</h3>
-            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-5 hover:text-white border-[#89A2ED]">
+            <h3 className="text-ow1 dm-sans text-lg font-medium">2024 election results</h3>
+            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-5 hover:text-black border-[#89A2ED]">
               View Now!
             </Button>
           </div>
         </Card>
 
         <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4">
-          <div className="w-24 h-24 bg-red-400 rounded-lg" />
+        <div className="w-24 h-24 rounded-lg overflow-hidden">
+            <Image
+              src="/main/trading.jpg"
+              alt="elon"
+              className="object-cover w-full h-full"
+              width={400}
+              height={400}
+            />
+          </div>
           <div className="flex flex-col gap-2 flex-1">
-            <h3 className="text-ow1 text-lg font-medium">IPL Auction 2025 Players List !</h3>
-            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-white border-[#89A2ED]">
-              View 
+            <h3 className="text-ow1 text-lg font-medium">Start Trading</h3>
+            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-black border-[#89A2ED]">
+              Sign Up
             </Button>
           </div>
         </Card>
 
         <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4">
-          <div className="w-24 h-24 bg-blue-400 rounded-lg" />
+        <div className="w-24 h-24 rounded-lg overflow-hidden">
+            <Image
+              src="/main/elon.jpg"
+              alt="elon"
+              className="object-cover w-full h-full"
+              width={400}
+              height={400}
+            />
+          </div>
+
+          
           <div className="flex flex-col gap-2 flex-1">
-            <h3 className="text-ow1 text-lg font-medium">Make Your First Trade And Get 20% OFF!!</h3>
-            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-white border-[#89A2ED]">
-              Trade
+            <h3 className="text-ow1 text-lg font-medium">Elon Musk tweet's</h3>
+            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-black border-[#89A2ED]">
+              See Now
             </Button>
           </div>
         </Card>
