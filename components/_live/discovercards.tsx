@@ -38,10 +38,8 @@ export const PredictionCard: React.FC<CardData> = ({
   image, 
   question, 
   outcomes, 
-  description ,
+  description,
   _count,
-  // trades,
-  // username
 }) => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
   const [showTooltip, setShowTooltip] = useState(false)
@@ -93,10 +91,10 @@ export const PredictionCard: React.FC<CardData> = ({
                       <Button
                         key={outcome.id}
                         variant="ghost"
-                        className={`h-10 text-sm font-medium w-full ${
+                        className={`h-10 text-sm font-medium w-full transition-colors duration-200 ${
                           index % 2 === 0 
-                            ? 'bg-[#1F2133] hover:bg-[#1F4A37] text-[#4ADE80]' 
-                            : 'bg-[#1F2133] hover:bg-[#482D33] text-[#F87171]'
+                            ? 'bg-[#1F2133] group-hover:bg-[#1F4A37] text-[#4ADE80]' 
+                            : 'bg-[#1F2133] group-hover:bg-[#482D33] text-[#F87171]'
                         }`}
                       >
                         Buy {outcome.outcome_title} {index % 2 === 0 ? '↑' : '↓'}
@@ -136,7 +134,6 @@ export const PredictionCard: React.FC<CardData> = ({
     </div>
   )
 }
-
 
 export const CardSkeleton = () => (
   <Card className="bg-[#151419] border-none text-white overflow-hidden animate-pulse">
