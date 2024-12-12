@@ -110,7 +110,7 @@ export default function DiscoverSection() {
             </div>
           </Card>
 
-          <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4 min-w-[280px] md:min-w-0">
+          <Card className="bg-[#151419] border-[#FF4B00]/40 pb-4 px-4 flex items-center gap-4 min-w-[280px] md:min-w-0">
             <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
               <Image
                 src="/main/trading.jpg"
@@ -180,7 +180,7 @@ export default function DiscoverSection() {
         </div>
       </div>
     </div>
-      <div className=''>
+      <div className='md:translate-y-0 -translate-y-14'>
         <DiscoverCards/>
       </div>
 
