@@ -39,7 +39,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${themeFont.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${themeFont.variable} bg-[#0c0c0c] antialiased`}
       >
         <ContextProvider cookies={cookies}>
           <GoogleAnalytics GA_MEASUREMENT_ID="G-XZ9LL5NGH1"/>

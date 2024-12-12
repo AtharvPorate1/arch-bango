@@ -4,12 +4,12 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className="bg-[#0c0c0c] text-white py-4">
-      <div className="container mt-32 mx-auto px-4 md:w-[85%]">
+      <div className="container md:mt-32 mx-auto px-4 md:w-[85%]">
         <div className="flex flex-col md:flex-row justify-between items-center">
           {/* Logo Section */}
           <div className="flex items-center flex-col space-x-4">
             <div className="w-48 h-48 flex items-center justify-center">
-              <Image src="/plogo.png" alt="logo" height={200} width={200} />
+              <Image src="/footerlogo.png" alt="logo" height={200} width={200} />
             </div>
             <div className="text-sm">@predictr.Market All Right Reserved 2024</div>
           </div>

@@ -76,26 +76,11 @@ export default function DiscoverSection() {
 
   return (
     <div className="min-h-screen dm-sans bg-[#0c0c0c] text-white p-8">
-      <div className="max-w-md mx-auto space-y-8">
-        {/* Create an Event Button */}
-        {/* <div className="flex justify-center">
-          <Link href="/create-event">
-          <div className="text-lg md:text-2xl hover:underline font-sans font-semibold b text-ow1 border-gray-700 ">
-            [ CREATE AN EVENT ]
-          </div>
-          </Link>
-        </div > */}
+      <div className="max-w-md mx-auto md:space-y-8">
 
-        {/* Prediction Card */}
-        
-        
-       
-
-
-        {/* Search Bar */}
       </div>
-      <div className="flex flex-col gap-8 p-4 py-6 ">
-      {/* Search Bar */}
+      <div className="flex flex-col gap-8 -translate-y-10 md:translate-y-0 p-4 py-6 ">
+
       <div className="relative max-w-3xl  mx-auto w-full">
         <Input
           placeholder="Search Events/Bets."
@@ -104,64 +89,65 @@ export default function DiscoverSection() {
         <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-[#FF4B00]/40" />
       </div>
 
-      {/* Promotional Cards */}
-      <div className="grid grid-cols-1 dm-sans  md:grid-cols-3 gap-4 max-w-7xl mx-auto w-full">
-        <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4">
-        <div className="w-24 h-24 rounded-lg overflow-hidden">
-            <Image
-              src="/main/trump.jpg"
-              alt="elon"
-              className="object-cover w-full h-full"
-              width={400}
-              height={400}
-            />
-          </div>
-          <div className="flex flex-col gap-2 flex-1">
-            <h3 className="text-ow1 dm-sans text-lg font-medium">2024 election results</h3>
-            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-5 hover:text-black border-[#89A2ED]">
-              View Now!
-            </Button>
-          </div>
-        </Card>
+      {/* to change section */}
+      <ScrollArea className="w-full">
+        <div className="flex flex-nowrap gap-4 pb-4 md:grid md:grid-cols-3 max-w-7xl mx-auto w-full">
+          <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4 min-w-[280px] md:min-w-0">
+            <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+              <Image
+                src="/main/trump.jpg"
+                alt="elon"
+                className="object-cover w-full h-full"
+                width={400}
+                height={400}
+              />
+            </div>
+            <div className="flex flex-col gap-2 flex-1">
+              <h3 className="text-ow1 dm-sans text-lg font-medium">2024 election results</h3>
+              <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-5 hover:text-black border-[#89A2ED]">
+                View Now!
+              </Button>
+            </div>
+          </Card>
 
-        <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4">
-        <div className="w-24 h-24 rounded-lg overflow-hidden">
-            <Image
-              src="/main/trading.jpg"
-              alt="elon"
-              className="object-cover w-full h-full"
-              width={400}
-              height={400}
-            />
-          </div>
-          <div className="flex flex-col gap-2 flex-1">
-            <h3 className="text-ow1 text-lg font-medium">Start Trading</h3>
-            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-black border-[#89A2ED]">
-              Sign Up
-            </Button>
-          </div>
-        </Card>
+          <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4 min-w-[280px] md:min-w-0">
+            <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+              <Image
+                src="/main/trading.jpg"
+                alt="elon"
+                className="object-cover w-full h-full"
+                width={400}
+                height={400}
+              />
+            </div>
+            <div className="flex flex-col gap-2 flex-1">
+              <h3 className="text-ow1 text-lg font-medium">Start Trading</h3>
+              <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-black border-[#89A2ED]">
+                Sign Up
+              </Button>
+            </div>
+          </Card>
 
-        <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4">
-        <div className="w-24 h-24 rounded-lg overflow-hidden">
-            <Image
-              src="/main/elon.jpg"
-              alt="elon"
-              className="object-cover w-full h-full"
-              width={400}
-              height={400}
-            />
-          </div>
-
-          
-          <div className="flex flex-col gap-2 flex-1">
-            <h3 className="text-ow1 text-lg font-medium">Elon Musk tweet's</h3>
-            <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-black border-[#89A2ED]">
-              See Now
-            </Button>
-          </div>
-        </Card>
-      </div>
+          <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4 min-w-[280px] md:min-w-0">
+            <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+              <Image
+                src="/main/elon.jpg"
+                alt="elon"
+                className="object-cover w-full h-full"
+                width={400}
+                height={400}
+              />
+            </div>
+            <div className="flex flex-col gap-2 flex-1">
+              <h3 className="text-ow1 text-lg font-medium">Elon Musk tweet's</h3>
+              <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-black border-[#89A2ED]">
+                See Now
+              </Button>
+            </div>
+          </Card>
+        </div>
+        <ScrollBar orientation="horizontal" className='text-white' />
+      </ScrollArea>
 
       {/* Navigation Menu - Centered */}
       <div className="flex justify-center w-full">
@@ -184,11 +170,10 @@ export default function DiscoverSection() {
                 </Button>
               ))}
               <div
-  className="text-[#ffffff] bg-[#1F2133] rounded-full flex items-center justify-center h-8 w-8 hover:bg-[#ff4d00]/90"
->
-  <ChevronRight className="h-4 w-4" />
-</div>
-
+                className="text-[#ffffff] bg-[#1F2133] rounded-full flex items-center justify-center h-8 w-8 hover:bg-[#ff4d00]/90"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </div>
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>

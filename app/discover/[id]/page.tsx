@@ -276,6 +276,9 @@ export default function EventDetailPage() {
         </div>
       </div>
       <Footer/>
+      <div className="block min-h-20 sm:hidden">
+        .
+      </div>
     </>
   )
 }
