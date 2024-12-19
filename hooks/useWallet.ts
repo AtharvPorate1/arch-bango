@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AddressPurpose, request, MessageSigningProtocols } from 'sats-connect';
 import { generatePrivateKey, generatePubkeyFromPrivateKey, hexToUint8Array } from "../utils/cryptoHelpers";
 import * as secp256k1 from 'noble-secp256k1';
+import Wallet from "sats-connect";
 
 interface WalletState {
   isConnected: boolean;
@@ -11,112 +12,90 @@ interface WalletState {
 }
 
 export function useWallet() {
-    const NETWORK =  process.env.NEXT_PUBLIC_NETWORK || 'regtest';
-    const [state, setState] = useState<WalletState>(() => {
-      // Initialize from localStorage
-      const savedState = localStorage.getItem('walletState');
-      if (savedState) {
-        const parsed = JSON.parse(savedState);
-        return {
-          isConnected: parsed.isConnected,
-          publicKey: parsed.publicKey,
-          privateKey: parsed.privateKey,
-          address: parsed.address,
-        };
-      }
+  const NETWORK = process.env.NEXT_PUBLIC_NETWORK || 'regtest';
+  const [state, setState] = useState<WalletState>(() => {
+    // Initialize from localStorage
+    const savedState = localStorage.getItem('walletState');
+    if (savedState) {
+      const parsed = JSON.parse(savedState);
       return {
-        isConnected: false,
-        publicKey: null,
-        privateKey: null,
-        address: null,
+        isConnected: parsed.isConnected,
+        publicKey: parsed.publicKey,
+        privateKey: parsed.privateKey,
+        address: parsed.address,
       };
-    });
-  
-    const connectRegtest = async () => {
-      const privateKey = generatePrivateKey();
-      const publicKey = generatePubkeyFromPrivateKey(privateKey);
-      
-      const newState = {
-        isConnected: true,
-        privateKey,
-        publicKey: publicKey.toString(),
-        address: null,
-      };
-      setState(newState);
-      localStorage.setItem('walletState', JSON.stringify(newState));
+    }
+    return {
+      isConnected: false,
+      publicKey: null,
+      privateKey: null,
+      address: null,
     };
-  
-    const connectWallet = async () => {    
-      try {
-        const result: any = await request('wallet_connect', null);
-        console.log(`Addresses: ${JSON.stringify(result.result.addresses)}`);
-  
-        if (result.result.addresses && result.result.addresses.length > 0) {
-          const newState = {
-            isConnected: true,
-            address: result.result.addresses[0].address,
-            publicKey: result.result.addresses[0].publicKey,
-            privateKey: null,
-          };
-          setState(newState);
-          localStorage.setItem('walletState', JSON.stringify(newState));
-        }
-      } catch (error) {
-        console.error('Error connecting wallet:', error);
-        throw error;
-      }
-    };
+  });
 
-    const connect = async () => {
-      if (NETWORK === 'regtest') {
-        await connectRegtest();
-      } else {
-        await connectWallet();
-      }
-    };
-  
-    const disconnect = () => {
-      localStorage.removeItem('walletState');
-      setState({
-        isConnected: false,
-        publicKey: null,
-        privateKey: null,
-        address: null,
+  const connectWallet = async () => {
+    try {
+      const result: any = await Wallet.request('getAccounts', {
+        purposes: [AddressPurpose.Ordinals],
+        message: 'Connect to Predictr Market',
       });
-    };
 
-    const signMessage = async (message: string): Promise<string> => {
-      if (!state.isConnected) throw new Error('Wallet not connected');
-    
-      if (NETWORK === 'regtest' && state.privateKey) {
-        try {
-          const messageBytes = new TextEncoder().encode(message);
-          const messageHash = await crypto.subtle.digest('SHA-256', messageBytes);
-          const hashArray = new Uint8Array(messageHash);
-          const privateKeyBytes = hexToUint8Array(state.privateKey);
-          const signature = await secp256k1.sign(hashArray, privateKeyBytes);
-          return Buffer.from(signature).toString('hex');
-        } catch (error) {
-          console.error('Error signing message:', error);
-          throw new Error('Failed to sign message');
-        }
-      } else {
-        console.debug(`Signing message: ${message}`);
-        try {
-            console.log(`Signing key: ${state.publicKey}`);
-          const signResult: any = await request('signMessage', {              
-            address: state.address!,
-            message: message,
-            protocol: MessageSigningProtocols.BIP322,
-          });
-          console.log(`Signature: ${signResult.result.signature}`);
-          return signResult.result.signature;
-        } catch (error) {
-          console.error('Error signing with wallet:', error);
-          throw error;
-        }
+      console.log(result)
+
+      if (result.result[0].address && result.result.length > 0) {
+        console.log("chute")
+        const newState = {
+          isConnected: true,
+          address: result.result[0].address,
+          publicKey: result.result[0].publicKey,
+          privateKey: null,
+        };
+        console.log(newState)
+        setState(newState);
+        localStorage.setItem('walletState', JSON.stringify(newState));
+        localStorage.setItem("walletAddress", newState.address)
       }
-    };
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+      throw error;
+    }
+  };
+
+  const connect = async () => {
+    await connectWallet();
+  };
+
+  const disconnect = () => {
+    localStorage.removeItem('walletState');
+    localStorage.removeItem('walletAddress');
+
+    setState({
+      isConnected: false,
+      publicKey: null,
+      privateKey: null,
+      address: null,
+    });
+  };
+
+  const signMessage = async (message: string): Promise<string> => {
+    if (!state.isConnected) throw new Error('Wallet not connected');
+
+    try {
+      console.log(`Signing key: ${state.publicKey}`);
+      const signResult: any = await Wallet.request('signMessage', {
+        address: state.address!,
+        message: message,
+        protocol: MessageSigningProtocols.BIP322,
+      });
+
+      console.log(`Signature: ${signResult.result.signature}`);
+      return signResult.result.signature;
+
+    } catch (error) {
+      console.error('Error signing with wallet:', error);
+      throw error;
+    }
+  };
 
   return {
     ...state,

@@ -1,21 +1,19 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { request } from 'sats-connect'
 import AuthModal from './AuthModal'
-import { useWallet } from '@/hooks/useWallet'
+import { useAtom } from 'jotai'
 
 function ConnectButton(): JSX.Element {
-  const wallet = useWallet()
-  const address = wallet.address;
   const [username, setUsername] = useState(() => localStorage.getItem('username') || "connect wallet")
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authenticated, setAuthenticated] = useState(() => !!localStorage.getItem('username'))
 
+
   const checkUsernameAndAuth = useCallback(() => {
     const storedUsername = localStorage.getItem('username')
     const accessToken = localStorage.getItem('accessToken')
-    
+
     if (storedUsername) {
       setUsername(storedUsername)
       setAuthenticated(true)
@@ -27,33 +25,14 @@ function ConnectButton(): JSX.Element {
 
   useEffect(() => {
     checkUsernameAndAuth()
-    
+
     // Set up an interval to check for changes
     const intervalId = setInterval(checkUsernameAndAuth, 1000)
-    
+
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId)
   }, [checkUsernameAndAuth])
 
-  useEffect(() => {
-    const fetchAddress = async () => {
-      try {
-        const response = await request('wallet_getAccount', null)
-        if(response){
-          const walletAddress = response.result.addresses[0].address
-          if (walletAddress) {
-            checkUsernameAndAuth()
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching wallet address:', error)
-      }
-    }
-
-    if (!address) {
-      fetchAddress()
-    }
-  }, [address, checkUsernameAndAuth])
 
   const handleAppkit = useCallback(() => {
     setIsAuthModalOpen(true)
@@ -67,8 +46,8 @@ function ConnectButton(): JSX.Element {
       >
         [ {username} ]
       </div>
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
+      <AuthModal
+        isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         initialUsername={username}
       />

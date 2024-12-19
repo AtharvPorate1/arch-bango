@@ -6,6 +6,7 @@ import ContextProvider from '@/context'
 import { headers } from "next/headers";
 import { Toaster } from "@/components/ui/sonner";
 import GoogleAnalytics from "@/lib/googleanalytics";
+import { Provider as JotaiProvider } from "jotai"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,17 +36,19 @@ export default async function RootLayout({
 }>) {
   const headersList = await headers();
   const cookies = headersList.get('cookie');
-// console.log("Cookies on server",cookies)
+  // console.log("Cookies on server",cookies)
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${themeFont.variable} bg-[#0c0c0c] antialiased`}
       >
         <ContextProvider cookies={cookies}>
-          <GoogleAnalytics GA_MEASUREMENT_ID="G-XZ9LL5NGH1"/>
-          <Navbar />
-          {children}
-          <Toaster richColors/>
+          <GoogleAnalytics GA_MEASUREMENT_ID="G-XZ9LL5NGH1" />
+          <JotaiProvider>
+            <Navbar />
+            {children}
+          </JotaiProvider>
+          <Toaster richColors />
         </ContextProvider>
       </body>
     </html>

@@ -12,6 +12,7 @@ import Image from "next/image"
 import PredictionMarketChart from "@/components/_live/predictionmarketchart"
 import TradeComponent from "@/components/_live/tradecomponent"
 import { request } from "sats-connect"
+import { walletStore } from "@/store/authStore"
 
 type EventData = {
   id: number
@@ -51,6 +52,7 @@ export default function EventDetailPage() {
   const [address, setAddress] = useState<string | null>(null)
   const [isImageExpanded, setIsImageExpanded] = useState(true)
   const [lastTradeTimestamp, setLastTradeTimestamp] = useState(0)
+  let walletState = walletStore((state) => state)
 
   // Wallet Connection State
   const [connectionStatus, setConnectionStatus] = useState({
@@ -79,19 +81,15 @@ export default function EventDetailPage() {
   // Fetch Wallet Address with Authentication Check
   const fetchWalletAddress = useCallback(async () => {
     try {
-      const response = await request('wallet_getAccount', null)
-      if (response) {
-        const walletAddress = response.result.addresses[0].address
         
-        setAddress(walletAddress)
+        setAddress(walletState.address)
         setConnectionStatus({
-          isDisconnected: !walletAddress,
+          isDisconnected: !walletState.address,
           isConnecting: false
         })
         
         // Verify authentication status after wallet connection
         checkUsernameAndAuth()
-      }
     } catch (error) {
       console.error('Error fetching wallet address:', error)
       setAddress(null)

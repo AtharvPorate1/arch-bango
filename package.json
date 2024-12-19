@@ -55,7 +55,8 @@
     "tailwindcss-animate": "^1.0.7",
     "viem": "^2.21.51",
     "wagmi": "^2.13.0",
-    "web3modal": "^1.9.12"
+    "web3modal": "^1.9.12",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@types/node": "^20",
