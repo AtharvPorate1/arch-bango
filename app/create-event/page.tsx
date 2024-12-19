@@ -70,7 +70,7 @@ export default function Component() {
       }
 
       // First upload the image
-      // const imageUrl = await uploadImage(accessToken)
+      const imageUrl = await uploadImage(accessToken)
 
       // Combine date and time
       const expiryDate = new Date(`${endDate}T${endTime}:00`)
@@ -83,14 +83,31 @@ export default function Component() {
         description: description,
         expiry_date: expiryDate.toISOString(),
         community: ['elections', 'USA'],
-        // ...(imageUrl && { image: imageUrl }),
+        ...(imageUrl && { image: imageUrl }),
       }
 
+
+    
+      // Create the event
+      const response = await fetch('https://backend-tkuv.onrender.com/v1/events', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create event')
+      }
+
+      const jsn: any = await response.json();
 
       // Web3 Code
 
       const uniqueId = new Uint8Array(32).fill(0); // Fill with your ID bytes
-      const uniqueIdBytes = new TextEncoder().encode(("6737e74f-d9e1-4683-85f9-9430efe8c0e4" as string).replace("-",""));
+      const uniqueIdBytes = new TextEncoder().encode((jsn.unique_id as string).replace("-",""));
       uniqueId.set(uniqueIdBytes.slice(0, 32));
 
       const schema = {
@@ -149,23 +166,6 @@ export default function Component() {
       toast.success("Event created succesfully, Check discover Page")
 
 
-      return
-
-      // Create the event
-      const response = await fetch('https://backend-tkuv.onrender.com/v1/events', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(eventData),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to create event')
-      }
-
-      const jsn: any = await response.json();
 
 
       toast.success("Event created succesfully, Check discover Page")
