@@ -90,7 +90,7 @@ export default function Component() {
       // Web3 Code
 
       const uniqueId = new Uint8Array(32).fill(0); // Fill with your ID bytes
-      const uniqueIdBytes = new TextEncoder().encode(("8b072823-e719-455f-8c06-65cc93183ccc" as string).replace("-",""));
+      const uniqueIdBytes = new TextEncoder().encode(("6737e74f-d9e1-4683-85f9-9430efe8c0e4" as string).replace("-",""));
       uniqueId.set(uniqueIdBytes.slice(0, 32));
 
       const schema = {
