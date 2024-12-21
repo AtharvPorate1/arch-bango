@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import EditProfileModal from './EditProfileModal'
 import { walletStore } from '@/store/authStore'
 import Wallet from "sats-connect";
+import FaucetButton from '../Faucet'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -193,6 +194,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
               >
                 Disconnect Wallet
               </Button>
+              <FaucetButton/>
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-white transition-colors text-center text-sm"

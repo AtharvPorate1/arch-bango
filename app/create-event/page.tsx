@@ -30,6 +30,7 @@ export default function Component() {
   const client = new RpcConnection(process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:9002");
   const wallet = useWallet();
 
+  client.sendTransaction
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0])
