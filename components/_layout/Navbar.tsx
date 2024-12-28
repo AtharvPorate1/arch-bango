@@ -16,7 +16,7 @@ export default function Navbar() {
       <div className="max-w-[1400px] mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image 
-            src="/plogo.png"
+            src="/plogo2.jpg"
             height={200}
             width={200}
             alt="Logo"
