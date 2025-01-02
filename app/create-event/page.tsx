@@ -128,6 +128,8 @@ export default function Component() {
         num_outcomes: outcomes.length,
       };
 
+      const publicKey = await window.unisat.getPublicKey();
+
       const instruction: Instruction = {
         program_id: PubkeyUtil.fromHex(PROGRAM_PUBKEY!),
         accounts: [
@@ -137,7 +139,7 @@ export default function Component() {
             is_writable: true
           },
           {
-            pubkey: PubkeyUtil.fromHex(wallet.publicKey!),
+            pubkey: PubkeyUtil.fromHex(publicKey!),
             is_signer: true,
             is_writable: false
           }
@@ -147,12 +149,15 @@ export default function Component() {
 
 
       const messageObj: Message = {
-        signers: [PubkeyUtil.fromHex(wallet.publicKey!)],
+        signers: [PubkeyUtil.fromHex(publicKey)],
         instructions: [instruction],
       };
 
       const messageHash = MessageUtil.hash(messageObj);
-      const signature = await wallet.signMessage(Buffer.from(messageHash).toString('hex'));
+      // const signature = await wallet.signMessage(Buffer.from(messageHash).toString('hex'));
+      const signature: any = await window.unisat.signMessage(Buffer.from(messageHash).toString('hex'))
+
+
       const signatureBytes = new Uint8Array(Buffer.from(signature, 'base64')).slice(2);
 
       const result = await client.sendTransaction({

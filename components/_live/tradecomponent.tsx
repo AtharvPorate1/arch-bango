@@ -112,16 +112,20 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
         totalAmountInvesting = parseFloat(price) * (outcome?.btcPrice!/100000000);
       }
       
-      const sendResp = await Wallet.request("sendTransfer",{
-        recipients: [
-          {
-            address: "tb1qd97wrnlsshvktf0zezdygmqqa3557d9gzx48mv",
-            amount: 1000
-          }
-        ]
-      })
+      // const sendResp = await Wallet.request("sendTransfer",{
+      //   recipients: [
+      //     {
+      //       address: "tb1qd97wrnlsshvktf0zezdygmqqa3557d9gzx48mv",
+      //       amount: 1000
+      //     }
+      //   ]
+      // })
 
-      if (sendResp.status === "error") {
+      console.log(price)
+
+      const txid = await window.unisat.sendBitcoin("tb1qrn7tvhdf6wnh790384ahj56u0xaa0kqgautnnz", parseInt(price))
+
+      if (txid.length === 0) {
         toast.error("couldn't place bet")
         return;
       }
@@ -248,7 +252,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
                     Reset
                   </Button>
                   <Button onClick={() => handlePricePreset(2000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    1000 SATS
+                    2000 SATS
                   </Button>
                   <Button onClick={() => handlePricePreset(5000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
                     5000 SATS

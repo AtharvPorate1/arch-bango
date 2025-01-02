@@ -55,20 +55,33 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
 
   const connectWallet = async () => {
     try {
-      const result: any = await Wallet.request('getAccounts', {
-        purposes: [AddressPurpose.Ordinals],
-        message: 'Connect to Predictr Market',
-      });
+      // const result: any = await Wallet.request('getAccounts', {
+      //   purposes: [AddressPurpose.Ordinals],
+      //   message: 'Connect to Predictr Market',
+      // });
 
-      if (result.result.length === 0) {
+      const result = await window.unisat.requestAccounts(); 
+
+      // if (result.result.length === 0) {
+      //   throw "No Account found | Wallet Error"
+      // }
+
+      if (result.length === 0) {
         throw "No Account found | Wallet Error"
       }
 
+      // const newState = {
+      //   isConnected: true,
+      //   publicKey: result.result[0].publicKey,
+      //   privateKey: null,
+      //   address: result.result[0].address,
+      // };
+
       const newState = {
         isConnected: true,
-        publicKey: result.result[0].publicKey,
+        publicKey: result[0],
         privateKey: null,
-        address: result.result[0].address,
+        address: result[0],
       };
 
       // Update zustand store
@@ -79,14 +92,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
 
       const message = "Prediction market at its peak with Bango"
 
-      const signResponse: any = await Wallet.request('signMessage', {
-        address: newState.address!,
-        message: message,
-        protocol: MessageSigningProtocols.BIP322,
-      });
+      const signResponse: any = await window.unisat.signMessage(message,"bip322-simple")
+      // const signResponse: any = await Wallet.request('signMessage', {
+      //   address: newState.address!,
+      //   message: message,
+      //   protocol: MessageSigningProtocols.BIP322,
+      // });
 
-      if (signResponse.status === "success") {
-        const signature = signResponse.result.signature
+      // if (signResponse.status === "success") {
+      if (signResponse.length > 0) {
+        // const signature = signResponse.result.signature
+        const signature = signResponse;
+        console.log(signature)
 
         const walletData = {
           walletAddress: newState.address,
@@ -101,8 +118,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
           },
           body: JSON.stringify(walletData),
         })
-
-        console.log(walletData, "===")
 
 
         if (apiResponse.ok) {
