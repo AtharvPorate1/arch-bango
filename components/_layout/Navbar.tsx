@@ -28,7 +28,7 @@ export default function Navbar() {
             Sports
           </Link>
           <Link href="/crypto" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
-            Crypto
+            Crypto 
           </Link>
           <Link href="/politics" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
             Politics
