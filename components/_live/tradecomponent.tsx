@@ -213,7 +213,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
               <h3 className="mb-2">Outcome</h3>
               <div
                 className={` ${
-                  eventData?.outcomes.length! >= 3 ? 'grid grid-cols-2 gap-2' : 'flex items-center gap-2'
+                  eventData?.outcomes.length! >= 3 ? 'grid grid-cols-2 gap-2' : 'flex items-center gap-2 flex-wrap'
                 }`}
               >
                 {eventData?.outcomes.map((outcome, index) => (
@@ -357,6 +357,7 @@ const MobileTradeComponent: React.FC<TradeComponentProps> = (props) => {
 
 export default function TradeComponent(props: TradeComponentProps) {
   const [isMobile, setIsMobile] = useState(false)
+  const [positionsData, setPositionsData] = useState<any>([]);
 
   useEffect(() => {
     const checkIfMobile = () => setIsMobile(window.innerWidth < 768)
@@ -371,12 +372,45 @@ export default function TradeComponent(props: TradeComponentProps) {
     return <MobileTradeComponent {...props} />
   }
 
+
+  // Fetch Event Order Activity
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (props.eventData === null) {
+          return;
+        }
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}trades?eventID=48&sortBy=createdAt%3Adesc&limit=10&page=1`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        setPositionsData(result);
+        console.log(result)
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      }
+    };
+
+    // Initial fetch
+    fetchData();
+
+    // Set up polling
+    const intervalId = setInterval(fetchData, 10000);
+
+    // Cleanup
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [props.eventData]); // Empty dependency array means this runs once on mount
+
+
   return (
     <>
       <TradeContent {...props} isBuySelected={isBuySelected} setIsBuySelected={setIsBuySelected} />
       <Card className="bg-darkbg2 border-none text-ow1 mt-4">
         <CardHeader>
-          <CardTitle className="text-ow1 text-lg -mb-1">Your Position</CardTitle>
+          <CardTitle className="text-ow1 text-lg -mb-1">Trade History</CardTitle>
         </CardHeader>
         <CardContent>
           {props.isLoading ? (
@@ -389,17 +423,21 @@ export default function TradeComponent(props: TradeComponentProps) {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="text-gray-500">
-                  <th className="px-4 py-1 text-o1 text-left">Vote</th>
+                  <th className="px-4 py-1 text-o1 text-left">Outcome</th>
                   <th className="px-4 text-o1 text-center">Price</th>
                   <th className="px-4 text-o1 text-right">Quantity</th>
                 </tr>
               </thead>
               <tbody>
-                {props.eventData?.outcomes.map((outcome) => (
-                  <tr key={outcome.id}>
-                    <td className="px-4 py-1 text-green-500">{outcome.outcome_title}</td>
-                    {/* <td className="px-4 text-center">$ {(outcome.total_liquidity / outcome.current_supply).toFixed(2)}</td> */}
-                    {/* <td className="px-4 text-right">{outcome.current_supply.toFixed(3)}</td> */}
+                {positionsData.map((trade: any) => (
+                  <tr key={trade.id}>
+                    {
+                      trade.order_type === "SELL"
+                      ? <td className="px-4 py-1 text-red-500">{trade.outcome.outcome_title}</td>
+                      : <td className="px-4 py-1 text-green-500">{trade.outcome.outcome_title}</td>
+                    }
+                    <td className="px-4 text-center">$ {trade.amount}</td>
+                    <td className="px-4 text-right">{trade.order_size}</td>
                   </tr>
                 ))}
               </tbody>
