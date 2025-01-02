@@ -173,7 +173,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
 
   const calculateBuyPrice = (outcomeId: number) => {
     const sharePrice = calculateSharePrice(outcomeId)
-    return (sharePrice).toFixed(2)
+    return (sharePrice).toFixed(3)
   }
 
   return (
