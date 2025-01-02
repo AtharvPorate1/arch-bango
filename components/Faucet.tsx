@@ -24,7 +24,7 @@ export default function FaucetButton() {
             return;
         }
 
-        const resp = await fetch("https://backend-tkuv.onrender.com/v1/utils/send-bitcoin", {
+        const resp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}utils/send-bitcoin`, {
             method: "POST",
             headers: {
                 'Authorization': `Bearer ${accessToken!}`,
