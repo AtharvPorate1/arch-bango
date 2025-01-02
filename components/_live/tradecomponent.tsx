@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import Wallet from "sats-connect";
 
 import { toast } from "sonner"
 
@@ -25,6 +26,7 @@ type PriceData = {
   price: number
   currentSupply: number
   totalLiquidity: number
+  btcPrice: number
 }
 
 type TradeComponentProps = {
@@ -82,6 +84,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
   }
 
   const handlePlaceOrder = async () => {
+    
     if (!address || isDisconnected || !selectedOutcome || !eventData) {
       console.error("Cannot place order: User not authenticated or outcome not selected")
       toast.error("Please connect your wallet to place an order")
@@ -102,12 +105,33 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
     }
 
     try {
+
+      let totalAmountInvesting = 0;
+      if (isBuySelected) {
+        const outcome = outcomePrices.find(outcomeInfo => outcomeInfo.title === selectedOutcome);
+        totalAmountInvesting = parseFloat(price) * (outcome?.btcPrice!/100000000);
+      }
+      
+      const sendResp = await Wallet.request("sendTransfer",{
+        recipients: [
+          {
+            address: "tb1qd97wrnlsshvktf0zezdygmqqa3557d9gzx48mv",
+            amount: 1000
+          }
+        ]
+      })
+
+      if (sendResp.status === "error") {
+        toast.error("couldn't place bet")
+        return;
+      }
+
       const endpoint = isBuySelected ? `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/buy` : `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/sell`
       const body = isBuySelected
         ? {
             eventId: eventData.id,
             outcomeId: selectedOutcomeData.id,
-            usdtAmount: parseFloat(price)
+            usdtAmount: totalAmountInvesting
           }
         : {
             eventId: eventData.id,
@@ -185,7 +209,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
               <h3 className="mb-2">Outcome</h3>
               <div
                 className={` ${
-                  eventData?.outcomes.length >= 3 ? 'grid grid-cols-2 gap-2' : 'flex items-center gap-2'
+                  eventData?.outcomes.length! >= 3 ? 'grid grid-cols-2 gap-2' : 'flex items-center gap-2'
                 }`}
               >
                 {eventData?.outcomes.map((outcome, index) => (
@@ -223,14 +247,14 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
                   <Button onClick={() => handlePricePreset(0)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
                     Reset
                   </Button>
-                  <Button onClick={() => handlePricePreset(10)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    10 SATS
+                  <Button onClick={() => handlePricePreset(2000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    1000 SATS
                   </Button>
-                  <Button onClick={() => handlePricePreset(50)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    50 SATS
+                  <Button onClick={() => handlePricePreset(5000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    5000 SATS
                   </Button>
-                  <Button onClick={() => handlePricePreset(100)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    100 SAT
+                  <Button onClick={() => handlePricePreset(10000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    10000 SAT
                   </Button>
                 </div>
               </div>
@@ -280,12 +304,12 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
             </div>
             <div className="flex justify-between text-sm">
               <span>Total</span>
-              <span>$ {isBuySelected ? (parseFloat(price) * shares).toFixed(2) : (calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)}</span>
+              <span>$ {isBuySelected ? (parseFloat(price) * (outcomePrices[0]?.btcPrice!/100000000)).toFixed(2) : (calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)}</span>
             </div>
             {isBuySelected && (
               <div className="flex justify-between text-sm">
                 <span>Potential Return</span>
-                <span className="text-green-500">$ {(calculateSharePrice(eventData?.outcomes[0]?.id || 0) * shares).toFixed(2)} ({((calculateSharePrice(eventData?.outcomes[0]?.id || 0) * shares / (parseFloat(price) * shares) - 1) * 100).toFixed(2)}%)</span>
+                <span className="text-green-500">$ {(parseFloat(price) * (outcomePrices[0]?.btcPrice!/100000000) * 12) / 100} ({((calculateSharePrice(eventData?.outcomes[0]?.id || 0) * shares / (parseFloat(price) * shares) - 1) * 12).toFixed(2)}%)</span>
               </div>
             )}
             {!isBuySelected && (
