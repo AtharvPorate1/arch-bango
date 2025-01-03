@@ -154,8 +154,8 @@ export default function Component() {
       };
 
       const messageHash = MessageUtil.hash(messageObj);
-      // const signature = await wallet.signMessage(Buffer.from(messageHash).toString('hex'));
-      const signature: any = await window.unisat.signMessage(Buffer.from(messageHash).toString('hex'))
+      const signature = await wallet.signMessage(Buffer.from(messageHash).toString('hex'));
+      // const signature: any = await window.unisat.signMessage(Buffer.from(messageHash).toString('hex'))
 
 
       const signatureBytes = new Uint8Array(Buffer.from(signature, 'base64')).slice(2);
