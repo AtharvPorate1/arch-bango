@@ -14,21 +14,21 @@ export default function Navbar() {
   return (
     <nav className="bg-[#0c0c0c] text-white px-4 py-3 dm-sans">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Image 
-            src="/plogo2.jpg"
-            height={200}
-            width={200}
-            alt="Logo"
-          />
-        </Link>
-        
+          <Link href="/" className="flex items-center gap-2 ">
+            <Image
+              src="/plogo3.png"
+              height={200}
+              width={200}
+              alt="Logo"
+            />
+          </Link>
+
         <div className="hidden md:flex items-center text-lg font-medium gap-8">
           <Link href="/sports" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
             Sports 
           </Link>
           <Link href="/crypto" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
-            Crypto 
+            Crypto
           </Link>
           <Link href="/politics" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
             Politics
