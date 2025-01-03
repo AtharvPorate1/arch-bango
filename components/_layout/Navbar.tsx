@@ -25,7 +25,7 @@ export default function Navbar() {
         
         <div className="hidden md:flex items-center text-lg font-medium gap-8">
           <Link href="/sports" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
-            Sports
+            Sports 
           </Link>
           <Link href="/crypto" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
             Crypto 
