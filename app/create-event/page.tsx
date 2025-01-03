@@ -139,7 +139,7 @@ export default function Component() {
             is_writable: true
           },
           {
-            pubkey: PubkeyUtil.fromHex(publicKey!),
+            pubkey: PubkeyUtil.fromHex(wallet.publicKey!),
             is_signer: true,
             is_writable: false
           }
@@ -149,7 +149,7 @@ export default function Component() {
 
 
       const messageObj: Message = {
-        signers: [PubkeyUtil.fromHex(publicKey)],
+        signers: [PubkeyUtil.fromHex(wallet.publicKey!)],
         instructions: [instruction],
       };
 
