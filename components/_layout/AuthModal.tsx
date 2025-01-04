@@ -10,6 +10,9 @@ import EditProfileModal from './EditProfileModal'
 import { walletStore } from '@/store/authStore'
 // import Wallet from "sats-connect";
 // import FaucetButton from '../Faucet'
+import { Steps } from 'intro.js-react'
+import 'intro.js/introjs.css'
+
 
 interface AuthModalProps {
   isOpen: boolean
@@ -231,7 +234,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
               <p className="text-center text-gray-400 text-sm sm:text-base">Choose your preferred method to connect:</p>
               <Button
                 onClick={connectWallet}
-                className="w-full bg-[#ff6600] hover:bg-[#ff8533] text-sm sm:text-base"
+                className="modal-connect-button w-full bg-[#ff6600] hover:bg-[#ff8533] text-sm sm:text-base"
               >
                 Connect Wallet
               </Button>

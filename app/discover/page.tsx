@@ -29,8 +29,8 @@ type CardData = {
 }
 
 const navigationItems = [
-  { label: "Top", variant: "outline" as const },
-  { label: "Crypto", variant: "ghost" as const },
+  { label: "Top", variant: "ghost" as const },
+  { label: "Crypto", variant: "outline" as const },
   { label: "News", variant: "ghost" as const },
   // { label: "IPL", variant: "ghost" as const },
   // { label: "Top Test Cricketer", variant: "ghost" as const },
@@ -90,7 +90,7 @@ export default function DiscoverSection() {
       </div>
 
       {/* to change section */}
-      <ScrollArea className="w-full">
+      {/* <ScrollArea className="w-full">
         <div className="flex flex-nowrap gap-4 pb-4 md:grid md:grid-cols-3 max-w-7xl mx-auto w-full">
           <Card className="bg-[#151419] border-[#FF4B00]/40 p-4 flex items-center gap-4 min-w-[280px] md:min-w-0">
             <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
@@ -103,7 +103,7 @@ export default function DiscoverSection() {
               />
             </div>
             <div className="flex flex-col gap-2 flex-1">
-              <h3 className="text-ow1 dm-sans text-lg font-medium">2024 election results</h3>
+              <h3 className="text-ow1 dm-sans text-lg font-medium">2025 election results</h3>
               <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-5 hover:text-black border-[#89A2ED]">
                 View Now!
               </Button>
@@ -139,7 +139,7 @@ export default function DiscoverSection() {
               />
             </div>
             <div className="flex flex-col gap-2 flex-1">
-              <h3 className="text-ow1 text-lg font-medium">Elon Musk tweet's</h3>
+              <h3 className="text-ow1 text-lg font-medium">Elon Musk tweet&apos;s</h3>
               <Button variant="outline" className="w-fit text-[#89A2ED] bg-[#89A2ED]/20 rounded-full px-8 hover:text-black border-[#89A2ED]">
                 See Now
               </Button>
@@ -147,7 +147,7 @@ export default function DiscoverSection() {
           </Card>
         </div>
         <ScrollBar orientation="horizontal" className='text-white' />
-      </ScrollArea>
+      </ScrollArea> */}
 
       {/* Navigation Menu - Centered */}
       <div className="flex justify-center w-full">
