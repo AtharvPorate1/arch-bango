@@ -48,6 +48,7 @@
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
+    "react-joyride": "^2.9.3",
     "recharts": "^2.13.0",
     "sats-connect": "3.0.x",
     "sonner": "^1.7.0",

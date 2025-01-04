@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Menu, X } from 'lucide-react'
 import Image from "next/image"
 import ConnectButton from "./ConnectButton"
+import Cash from "./cash"
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -42,6 +43,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
+          <Cash/>
           <ConnectButton />
           <button className="md:hidden" onClick={toggleMenu}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
