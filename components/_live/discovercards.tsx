@@ -1,12 +1,13 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Users, MessageSquare, ChevronLeft, ChevronRight, Star } from 'lucide-react'
-
+import { Users, MessageSquare, ChevronLeft, ChevronRight, Star, Search } from 'lucide-react'
+import { Input } from '../ui/input'
+import Fuse from 'fuse.js'
 export type CardData = {
   id: number
   unique_id: string
@@ -165,7 +166,7 @@ export default function Component() {
   const [sortedCards, setSortedCards] = useState<CardData[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [error, setError] = useState<string | null>(null)
-
+  const [searchQuery, setSearchQuery] = useState('')
   const fetchData = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events?status=ACTIVE&sortBy=createdAt:desc&limit=64`)
@@ -201,9 +202,20 @@ export default function Component() {
     loadData()
   }, [])
 
+  const fuse = useMemo(() => new Fuse(originalCards, {
+    keys: ['question', 'description', 'user.username'],
+    threshold: 0.3,
+  }), [originalCards])
+
   useEffect(() => {
-    setSortedCards(sortOrder === 'desc' ? originalCards : [...originalCards].reverse())
-  }, [sortOrder, originalCards])
+    if (searchQuery) {
+      const searchResults = fuse.search(searchQuery).map(result => result.item)
+      setSortedCards(searchResults)
+    } else {
+      setSortedCards(sortOrder === 'desc' ? originalCards : [...originalCards].reverse())
+    }
+    setCurrentPage(1)
+  }, [searchQuery, sortOrder, originalCards, fuse])
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage)
@@ -220,23 +232,15 @@ export default function Component() {
   return (
     <div className="bg-[#0c0c0c] text-ow1 dm-sans md:p-8">
       <div className="md:max-w-7xl mx-auto">
-        {/* <div className="flex justify-end mb-4">
-          <Select 
-            value={sortOrder} 
-            onValueChange={(value) => {
-              setSortOrder(value as 'asc' | 'desc')
-              setCurrentPage(1) // Reset to first page when sorting changes
-            }}
-          >
-            <SelectTrigger className="w-[180px] bg-[#1E1E1E] text-ow1">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent className="bg-[rgb(30,30,30)] text-white">
-              <SelectItem value="desc">Newest First</SelectItem>
-              <SelectItem value="asc">Oldest First</SelectItem>
-            </SelectContent>
-          </Select>
-        </div> */}
+        <div className="relative max-w-3xl mx-auto w-full mb-24">
+          <Input
+            placeholder="Search Events/Bets."
+            className="w-full bg-[#1c1c1f] text-white py-8 placeholder:text-gray-400 h-12 pr-12 border-[#FF4B00]/40 focus-visible:ring-[#ff4d00]"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-[#FF4B00]/40" />
+        </div>
         
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -281,4 +285,3 @@ export default function Component() {
     </div>
   )
 }
-

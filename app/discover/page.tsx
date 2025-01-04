@@ -81,13 +81,13 @@ export default function DiscoverSection() {
       </div>
       <div className="flex flex-col gap-8 -translate-y-10 md:translate-y-0 p-4 py-6 ">
 
-      <div className="relative max-w-3xl  mx-auto w-full">
+      {/* <div className="relative max-w-3xl  mx-auto w-full">
         <Input
           placeholder="Search Events/Bets."
           className="w-full bg-[#1c1c1f] text-white py-8 placeholder:text-gray-400 h-12 pr-12 border-[#FF4B00]/40 focus-visible:ring-[#ff4d00]"
         />
         <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-[#FF4B00]/40" />
-      </div>
+      </div> */}
 
       {/* to change section */}
       {/* <ScrollArea className="w-full">
