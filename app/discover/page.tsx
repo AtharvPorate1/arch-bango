@@ -152,7 +152,7 @@ export default function DiscoverSection() {
       {/* Navigation Menu - Centered */}
       <div className="flex justify-center w-full">
         <div className="max-w-7xl w-full">
-          <ScrollArea className="w-full">
+          {/* <ScrollArea className="w-full">
             <div className="flex gap-4 pb-2">
               {navigationItems.map((item, index) => (
                 <Button 
@@ -176,7 +176,7 @@ export default function DiscoverSection() {
               </div>
             </div>
             <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          </ScrollArea> */}
         </div>
       </div>
     </div>
