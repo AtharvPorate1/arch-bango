@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Logo Section */}
           <div className="flex items-center flex-col space-x-4">
             <div className="w-48 h-24 flex items-center justify-center">
-              <Image src="/footerlogo.png" alt="logo" height={200} width={200} />
+              <Image src="/mlogo.png" alt="logo" height={200} width={200} />
             </div>
             <div className="text-sm">@predictr.Market All Right Reserved 2024</div>
           </div>
