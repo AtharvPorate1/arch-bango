@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Menu, X } from 'lucide-react'
+import { Menu, X, HelpCircle } from 'lucide-react'
 import Image from "next/image"
 import ConnectButton from "./ConnectButton"
 import Cash from "./cash"
@@ -12,7 +12,6 @@ import 'intro.js/introjs.css'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [runTutorial, setRunTutorial] = useState(false)
   const [stepsEnabled, setStepsEnabled] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
@@ -38,6 +37,10 @@ export default function Navbar() {
     localStorage.setItem('tutorialCompleted', 'true')
   }
 
+  const startTutorial = () => {
+    setStepsEnabled(true)
+  }
+
   return (
     <nav className="bg-[#0c0c0c] text-white px-4 py-3 dm-sans">
       <Steps
@@ -46,7 +49,7 @@ export default function Navbar() {
         initialStep={0}
         onExit={onExit}
         options={{
-          doneLabel: 'Finish',
+          doneLabel: 'Got it!',
           showProgress: true,
           showBullets: false,
           exitOnOverlayClick: false,
@@ -86,6 +89,13 @@ export default function Navbar() {
           <div className="connect-button">
             <ConnectButton />
           </div>
+          <button 
+            className="text-white hover:text-o1 transition-colors" 
+            onClick={startTutorial}
+            title="Start Tutorial"
+          >
+            <HelpCircle size={24} />
+          </button>
           <button className="md:hidden" onClick={toggleMenu}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
