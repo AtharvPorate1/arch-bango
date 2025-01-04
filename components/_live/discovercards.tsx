@@ -220,7 +220,7 @@ export default function Component() {
   return (
     <div className="bg-[#0c0c0c] text-ow1 dm-sans md:p-8">
       <div className="md:max-w-7xl mx-auto">
-        <div className="flex justify-end mb-4">
+        {/* <div className="flex justify-end mb-4">
           <Select 
             value={sortOrder} 
             onValueChange={(value) => {
@@ -236,7 +236,7 @@ export default function Component() {
               <SelectItem value="asc">Oldest First</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
         
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

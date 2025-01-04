@@ -8,8 +8,8 @@ import { AddressPurpose, MessageSigningProtocols, request, RpcErrorCode } from "
 import { toast } from 'sonner'
 import EditProfileModal from './EditProfileModal'
 import { walletStore } from '@/store/authStore'
-import Wallet from "sats-connect";
-import FaucetButton from '../Faucet'
+// import Wallet from "sats-connect";
+// import FaucetButton from '../Faucet'
 
 interface AuthModalProps {
   isOpen: boolean

@@ -6,8 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import Wallet from "sats-connect";
-
 import { toast } from "sonner"
 
 type EventData = {
@@ -38,21 +36,28 @@ type TradeComponentProps = {
   setLastTradeTimestamp: React.Dispatch<React.SetStateAction<number>>
 }
 
-const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; setIsBuySelected: (value: boolean) => void; isDrawer?: boolean }> = ({
+export default function TradeComponent({
   eventData,
   isLoading,
   address,
   isDisconnected,
   isConnecting,
-  setLastTradeTimestamp,
-  isBuySelected,
-  setIsBuySelected,
-  isDrawer = false
-}) => {
+  setLastTradeTimestamp
+}: TradeComponentProps) {
+  const [isMobile, setIsMobile] = useState(false)
+  const [isBuySelected, setIsBuySelected] = useState(true)
   const [shares, setShares] = useState(10)
   const [price, setPrice] = useState("10")
   const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null)
   const [outcomePrices, setOutcomePrices] = useState<PriceData[]>([])
+  const [positionsData, setPositionsData] = useState<any>([])
+
+  useEffect(() => {
+    const checkIfMobile = () => setIsMobile(window.innerWidth < 768)
+    checkIfMobile()
+    window.addEventListener('resize', checkIfMobile)
+    return () => window.removeEventListener('resize', checkIfMobile)
+  }, [])
 
   useEffect(() => {
     if (!eventData?.id) return
@@ -62,7 +67,6 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}trades/${eventData.id}`)
         if (!response.ok) throw new Error('Failed to fetch prices')
         const data = await response.json()
-        console.log(data)
         setOutcomePrices(data)
       } catch (error) {
         console.error('Error fetching prices:', error)
@@ -75,16 +79,33 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
     return () => clearInterval(intervalId)
   }, [eventData?.id])
 
-  const handleShareChange = (delta: number) => {
-    setShares(prev => Math.max(1, prev + delta))
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (eventData === null) {
+        return
+      }
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}trades?eventID=48&sortBy=createdAt%3Adesc&limit=10&page=1`)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const result = await response.json()
+        setPositionsData(result)
+      } catch (err) {
+        console.error('Error fetching data:', err)
+      }
+    }
+
+    fetchData()
+    const intervalId = setInterval(fetchData, 10000)
+    return () => clearInterval(intervalId)
+  }, [eventData])
 
   const handlePricePreset = (amount: number) => {
     setPrice(amount.toString())
   }
 
   const handlePlaceOrder = async () => {
-    
     if (!address || isDisconnected || !selectedOutcome || !eventData) {
       console.error("Cannot place order: User not authenticated or outcome not selected")
       toast.error("Please connect your wallet to place an order")
@@ -105,29 +126,17 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
     }
 
     try {
-
-      let totalAmountInvesting = 0;
+      let totalAmountInvesting = 0
       if (isBuySelected) {
-        const outcome = outcomePrices.find(outcomeInfo => outcomeInfo.title === selectedOutcome);
-        totalAmountInvesting = parseFloat(price) * (outcome?.btcPrice!/100000000);
+        const outcome = outcomePrices.find(outcomeInfo => outcomeInfo.title === selectedOutcome)
+        totalAmountInvesting = parseFloat(price) * (outcome?.btcPrice! / 100000000)
       }
-      
-      // const sendResp = await Wallet.request("sendTransfer",{
-      //   recipients: [
-      //     {
-      //       address: "tb1qd97wrnlsshvktf0zezdygmqqa3557d9gzx48mv",
-      //       amount: 1000
-      //     }
-      //   ]
-      // })
-
-      console.log(price)
 
       const txid = await window.unisat.sendBitcoin("tb1qrn7tvhdf6wnh790384ahj56u0xaa0kqgautnnz", parseInt(price))
 
       if (txid.length === 0) {
         toast.error("couldn't place bet")
-        return;
+        return
       }
 
       const endpoint = isBuySelected ? `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/buy` : `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/sell`
@@ -180,7 +189,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
     return (sharePrice).toFixed(3)
   }
 
-  return (
+  const TradeContent = ({ isDrawer = false }) => (
     <Card className="bg-darkbg2 shadow-none border-none text-white">
       <CardContent className="space-y-5 px-4">
         {isLoading ? (
@@ -328,98 +337,45 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
       </CardContent>
     </Card>
   )
-}
-
-const MobileTradeComponent: React.FC<TradeComponentProps> = (props) => {
-  const [isBuySelected, setIsBuySelected] = useState(true)
-
-  return (
-    <div className="fixed bottom-0 left-0 right-0 bg-darkbg p-4 flex justify-around">
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button className="w-[45%] bg-[#4ADE80] text-black">Buy</Button>
-        </SheetTrigger>
-        <SheetContent side="bottom" className="bg-darkbg2 text-white">
-          <TradeContent {...props} isBuySelected={true} setIsBuySelected={setIsBuySelected} isDrawer={true} />
-        </SheetContent>
-      </Sheet>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button className="w-[45%] bg-[#F87171] text-black">Sell</Button>
-        </SheetTrigger>
-        <SheetContent side="bottom" className="bg-darkbg2 text-white">
-          <TradeContent {...props} isBuySelected={false} setIsBuySelected={setIsBuySelected} isDrawer={true} />
-        </SheetContent>
-      </Sheet>
-    </div>
-  )
-}
-
-export default function TradeComponent(props: TradeComponentProps) {
-  const [isMobile, setIsMobile] = useState(false)
-  const [positionsData, setPositionsData] = useState<any>([]);
-
-  useEffect(() => {
-    const checkIfMobile = () => setIsMobile(window.innerWidth < 768)
-    checkIfMobile()
-    window.addEventListener('resize', checkIfMobile)
-    return () => window.removeEventListener('resize', checkIfMobile)
-  }, [])
-
-  const [isBuySelected, setIsBuySelected] = useState(true)
 
   if (isMobile) {
-    return <MobileTradeComponent {...props} />
+    return (
+      <div className="fixed bottom-0 left-0 right-0 bg-darkbg p-4 flex justify-around">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button className="w-[45%] bg-[#4ADE80] text-black">Buy</Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="bg-darkbg2 text-white">
+            <TradeContent isDrawer={true} />
+          </SheetContent>
+        </Sheet>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button className="w-[45%] bg-[#F87171] text-black">Sell</Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="bg-darkbg2 text-white">
+            <TradeContent isDrawer={true} />
+          </SheetContent>
+        </Sheet>
+      </div>
+    )
   }
-
-
-  // Fetch Event Order Activity
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (props.eventData === null) {
-          return;
-        }
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}trades?eventID=48&sortBy=createdAt%3Adesc&limit=10&page=1`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
-        setPositionsData(result);
-        console.log(result)
-      } catch (err) {
-        console.error('Error fetching data:', err);
-      }
-    };
-
-    // Initial fetch
-    fetchData();
-
-    // Set up polling
-    const intervalId = setInterval(fetchData, 10000);
-
-    // Cleanup
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [props.eventData]); // Empty dependency array means this runs once on mount
-
 
   return (
     <>
-      <TradeContent {...props} isBuySelected={isBuySelected} setIsBuySelected={setIsBuySelected} />
+      <TradeContent />
       <Card className="bg-darkbg2 border-none text-ow1 mt-4">
         <CardHeader>
           <CardTitle className="text-ow1 text-lg -mb-1">Trade History</CardTitle>
         </CardHeader>
         <CardContent>
-          {props.isLoading ? (
+          {isLoading ? (
             <>
               <Skeleton className="h-6 w-full mb-2" />
               <Skeleton className="h-6 w-full mb-2" />
               <Skeleton className="h-6 w-full" />
             </>
-          ) : props.address && !props.isDisconnected ? (
+          ) : address && !isDisconnected ? (
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="text-gray-500">
@@ -433,8 +389,8 @@ export default function TradeComponent(props: TradeComponentProps) {
                   <tr key={trade.id}>
                     {
                       trade.order_type === "SELL"
-                      ? <td className="px-4 py-1 text-red-500">{trade.outcome.outcome_title}</td>
-                      : <td className="px-4 py-1 text-green-500">{trade.outcome.outcome_title}</td>
+                        ? <td className="px-4 py-1 text-red-500">{trade.outcome.outcome_title}</td>
+                        : <td className="px-4 py-1 text-green-500">{trade.outcome.outcome_title}</td>
                     }
                     <td className="px-4 text-center">$ {trade.amount}</td>
                     <td className="px-4 text-right">{trade.order_size}</td>

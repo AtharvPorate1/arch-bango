@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import AuthModal from './AuthModal'
-import { useAtom } from 'jotai'
+// import { useAtom } from 'jotai'
 
 function ConnectButton(): JSX.Element {
   const [username, setUsername] = useState(() => localStorage.getItem('username') || "connect wallet")
@@ -12,7 +12,7 @@ function ConnectButton(): JSX.Element {
 
   const checkUsernameAndAuth = useCallback(() => {
     const storedUsername = localStorage.getItem('username')
-    const accessToken = localStorage.getItem('accessToken')
+    // const accessToken = localStorage.getItem('accessToken')
 
     if (storedUsername) {
       setUsername(storedUsername)
@@ -40,12 +40,18 @@ function ConnectButton(): JSX.Element {
 
   return (
     <div>
-      <div
-        onClick={handleAppkit}
-        className='flex hover:cursor-pointer text-sm sm:text-lg self-center dm-sans md:font-bold text-black md:py-2 md:px-4 font-medium py-1 px-2 rounded-sm md:rounded-md bg-o1'
-      >
-        [ {username} ]
-      </div>
+<div
+  onClick={handleAppkit}
+  className="flex hover:cursor-pointer text-xs sm:text-lg self-center dm-sans md:font-bold text-black md:py-2 md:px-4 font-medium py-1 px-2 rounded-sm md:rounded-md bg-o1"
+  style={{
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }}
+>
+  [ {username} ]
+</div>
+
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
