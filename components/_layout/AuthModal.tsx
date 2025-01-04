@@ -209,12 +209,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
               >
                 Disconnect Wallet
               </Button>
-              <FaucetButton />
+              {/* <FaucetButton /> */}
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-white transition-colors text-center text-sm"
               >
-                <a href="https://mempool.space/testnet4/faucet/request  " target='_blank'>[ Testnet Faucet ]</a>
+                <a href="https://mempool.space/testnet4/faucet " target='_blank'>[ Get Testnet Faucet ]</a>
               </button>
               <button
                 onClick={onClose}

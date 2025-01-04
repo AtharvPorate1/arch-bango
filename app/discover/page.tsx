@@ -30,13 +30,13 @@ type CardData = {
 
 const navigationItems = [
   { label: "Top", variant: "outline" as const },
+  { label: "Crypto", variant: "ghost" as const },
   { label: "News", variant: "ghost" as const },
-  { label: "Indian Elections", variant: "ghost" as const },
-  { label: "IPL", variant: "ghost" as const },
-  { label: "Top Test Cricketer", variant: "ghost" as const },
-  { label: "WTC FINALS", variant: "ghost" as const },
-  { label: "Chill Guy", variant: "ghost" as const },
-  { label: "Friday Sale LIVE", variant: "ghost" as const },
+  // { label: "IPL", variant: "ghost" as const },
+  // { label: "Top Test Cricketer", variant: "ghost" as const },
+  // { label: "WTC FINALS", variant: "ghost" as const },
+  // { label: "Chill Guy", variant: "ghost" as const },
+  // { label: "Friday Sale LIVE", variant: "ghost" as const },
 ]
 
 export default function DiscoverSection() {

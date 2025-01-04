@@ -213,7 +213,7 @@ const TradeContent: React.FC<TradeComponentProps & { isBuySelected: boolean; set
               <h3 className="mb-2">Outcome</h3>
               <div
                 className={` ${
-                  eventData?.outcomes.length! >= 3 ? 'grid grid-cols-2 gap-2' : 'flex items-center gap-2 flex-wrap'
+                  eventData?.outcomes.length! >= 3 ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-2 gap-2'
                 }`}
               >
                 {eventData?.outcomes.map((outcome, index) => (
