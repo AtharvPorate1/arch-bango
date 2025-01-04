@@ -7,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Users, MessageSquare, ChevronLeft, ChevronRight, Star } from 'lucide-react'
 
-// Updated type definition to include unique_id
 export type CardData = {
   id: number
   unique_id: string
@@ -23,15 +22,14 @@ export type CardData = {
   }[]
   description: string
   createdAt: Date
-  user:{
-    username:string
+  user: {
+    username: string
   }
-  _count:{
-    threads:number
-    trades:number
+  _count: {
+    threads: number
+    trades: number
   }
 }
-
 
 export const PredictionCard: React.FC<CardData> = ({ 
   id, 
@@ -163,21 +161,19 @@ const ITEMS_PER_PAGE = 12
 export default function Component() {
   const [sortOrder, setSortOrder] = useState('desc')
   const [isLoading, setIsLoading] = useState(true)
-  const [cards, setCards] = useState<CardData[]>([])
+  const [originalCards, setOriginalCards] = useState<CardData[]>([])
+  const [sortedCards, setSortedCards] = useState<CardData[]>([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [hasNextPage, setHasNextPage] = useState(false)
-  const [hasPrevPage, setHasPrevPage] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchData = async (page: number) => {
+  const fetchData = async () => {
     try {
-      const response = await fetch(`https://backend-tkuv.onrender.com/v1/events?status=ACTIVE&sortBy=createdAt:desc&limit=${ITEMS_PER_PAGE}&page=${page}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events?status=ACTIVE&sortBy=createdAt:desc&limit=64`)
       const data = await response.json()
       console.log(data)
       if (!Array.isArray(data)) {
         throw new Error('Unexpected API response format')
       }
-
       return data
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -191,21 +187,9 @@ export default function Component() {
         setIsLoading(true)
         setError(null)
 
-        let currentData: CardData[]
-        let nextPageData: CardData[]
-
-        if (sortOrder === 'desc') {
-          nextPageData = await fetchData(currentPage + 1)
-          currentData = await fetchData(currentPage)
-          currentData = [...nextPageData.reverse(), ...currentData]
-        } else {
-          currentData = await fetchData(currentPage)
-          nextPageData = await fetchData(currentPage + 1)
-        }
-
-        setCards(currentData)
-        setHasNextPage(nextPageData.length > 0)
-        setHasPrevPage(currentPage > 1)
+        const allData: CardData[] = await fetchData()
+        setOriginalCards(allData)
+        setSortedCards(sortOrder === 'desc' ? allData : [...allData].reverse())
         setIsLoading(false)
       } catch (error) {
         setError('Failed to fetch data. Please try again later.')
@@ -215,19 +199,35 @@ export default function Component() {
     }
 
     loadData()
-  }, [sortOrder, currentPage])
+  }, [])
+
+  useEffect(() => {
+    setSortedCards(sortOrder === 'desc' ? originalCards : [...originalCards].reverse())
+  }, [sortOrder, originalCards])
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage)
   }
 
-  const displayedCards = sortOrder === 'desc' ? cards.slice(0, ITEMS_PER_PAGE) : cards
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const displayedCards = sortedCards.slice(startIndex, endIndex)
+
+  const totalPages = Math.ceil(sortedCards.length / ITEMS_PER_PAGE)
+  const hasNextPage = currentPage < totalPages
+  const hasPrevPage = currentPage > 1
 
   return (
-    <div className="bg-[#0c0c0c] text-ow1  dm-sans md:p-8">
+    <div className="bg-[#0c0c0c] text-ow1 dm-sans md:p-8">
       <div className="md:max-w-7xl mx-auto">
-        {/* <div className="flex justify-end mb-4">
-          <Select value={sortOrder} onValueChange={setSortOrder}>
+        <div className="flex justify-end mb-4">
+          <Select 
+            value={sortOrder} 
+            onValueChange={(value) => {
+              setSortOrder(value as 'asc' | 'desc')
+              setCurrentPage(1) // Reset to first page when sorting changes
+            }}
+          >
             <SelectTrigger className="w-[180px] bg-[#1E1E1E] text-ow1">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -236,7 +236,7 @@ export default function Component() {
               <SelectItem value="asc">Oldest First</SelectItem>
             </SelectContent>
           </Select>
-        </div> */}
+        </div>
         
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -247,7 +247,7 @@ export default function Component() {
         ) : error ? (
           <div className="text-center text-red-500">{error}</div>
         ) : (
-          <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {displayedCards.map((card) => (
               <PredictionCard key={card.id} {...card} />
             ))}
@@ -265,8 +265,7 @@ export default function Component() {
               <ChevronLeft className="h-4 w-4 text-black" />
             </Button>
             <span className="text-sm">
-              Page {currentPage}
-              {hasNextPage || hasPrevPage ? ' of ...' : ''}
+              Page {currentPage} of {totalPages}
             </span>
             <Button
               variant="outline"
@@ -282,3 +281,4 @@ export default function Component() {
     </div>
   )
 }
+

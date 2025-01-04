@@ -54,7 +54,7 @@ const Cash = () => {
   }, [])
 
   return (
-    <div className="flex flex-col dm-sans items-center">
+    <div className="flex flex-col dm-sans hover:bg-[#191B2A] p-2 rounded-sm cursor-pointer duration-300 items-center">
       {playMoney !== null ? (
         <>
           <div className="text-[#EC762E] text-md font-medium">
@@ -64,7 +64,7 @@ const Cash = () => {
         </>
       ) : (
         <>
-          <div className="text-[#4ADE80] text-md font-medium">$0.00</div>
+          <div className="text-[#EC762E] text-md font-medium">$0.00</div>
           <div className="text-gray-400 text-xs mt-1">Login</div>
         </>
       )}
