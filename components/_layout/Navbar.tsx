@@ -37,7 +37,7 @@ export default function Navbar() {
             Pop Culture
           </Link>
           <Link href="/business" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
-            Business
+            Business 
           </Link>
         </div>
 
