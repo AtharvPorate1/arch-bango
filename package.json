@@ -38,6 +38,7 @@
     "clsx": "^2.1.1",
     "dids": "^5.0.3",
     "ethers": "^6.13.4",
+    "intro.js-react": "^1.0.0",
     "jotai": "^2.10.3",
     "key-did-provider-ed25519": "^4.0.2",
     "key-did-resolver": "^4.0.0",

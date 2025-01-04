@@ -54,13 +54,13 @@ const Cash = () => {
   }, [])
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col dm-sans items-center">
       {playMoney !== null ? (
         <>
-          <div className="text-[#4ADE80] text-md font-medium">
+          <div className="text-[#EC762E] text-md font-medium">
             ${playMoney.toFixed(2)}
           </div>
-          <div className="text-gray-400 text-xs mt-1">Cash</div>
+          <div className="text-gray-400 text-xs mt-1">Portfolio</div>
         </>
       ) : (
         <>
