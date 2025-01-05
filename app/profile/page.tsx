@@ -165,7 +165,7 @@ export default function Component() {
         const username = localStorage.getItem('username')
         if (!username) throw new Error('Username not found in localStorage')
 
-        const userResponse = await fetch(`https://backend-tkuv.onrender.com/v1/users?username=${username}&limit=10&page=1`, {
+        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}users?username=${username}&limit=10&page=1`, {
           headers: {
             'Authorization': `Bearer ${accessToken || ''}`
           }
@@ -193,7 +193,7 @@ export default function Component() {
     if (!userId) return
     try {
       const accessToken = localStorage.getItem('accessToken')
-      const response = await fetch(`https://backend-tkuv.onrender.com/v1/events?userID=${userId}&status=${eventStatus}&sortBy=asc&limit=10&page=1`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events?userID=${userId}&status=${eventStatus}&sortBy=asc&limit=10&page=1`, {
         headers: {
           'Authorization': `Bearer ${accessToken || ''}`
         }

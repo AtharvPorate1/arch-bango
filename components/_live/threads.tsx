@@ -64,7 +64,7 @@ export default function Component({
 
   const fetchThreads = async () => {
     try {
-      const response = await fetch(`https://backend-tkuv.onrender.com/v1/threads?eventID=${id}&limit=100&page=1`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}threads?eventID=${id}&limit=100&page=1`)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
@@ -96,7 +96,7 @@ export default function Component({
     }
 
     try {
-      const response = await fetch('https://backend-tkuv.onrender.com/v1/upload', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -150,7 +150,7 @@ export default function Component({
         throw new Error("No access token found")
       }
 
-      const response = await fetch('https://backend-tkuv.onrender.com/v1/threads', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}threads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

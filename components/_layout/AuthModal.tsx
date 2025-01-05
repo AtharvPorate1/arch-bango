@@ -64,6 +64,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
       // });
 
       const result = await window.unisat.requestAccounts(); 
+      const pubKey = await window.unisat.getPublicKey();
 
       // if (result.result.length === 0) {
       //   throw "No Account found | Wallet Error"
@@ -82,7 +83,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
 
       const newState = {
         isConnected: true,
-        publicKey: result[0],
+        publicKey: pubKey,
         privateKey: null,
         address: result[0],
       };

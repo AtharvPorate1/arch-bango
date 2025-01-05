@@ -44,7 +44,7 @@ export default function EventDetails() {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await fetch(`https://backend-tkuv.onrender.com/v1/events/${params.id}`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events/${params.id}`)
         if (!response.ok) {
           throw new Error('Failed to fetch event data')
         }
@@ -91,7 +91,7 @@ export default function EventDetails() {
     }
 
     try {
-      const response = await fetch('https://backend-tkuv.onrender.com/v1/events/close', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events/close`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
