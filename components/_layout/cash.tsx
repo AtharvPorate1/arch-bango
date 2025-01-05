@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useEffect, useState } from "react"
 
 const Cash = () => {
@@ -34,6 +35,7 @@ const Cash = () => {
   }, [])
 
   return (
+    <Link href="/profile">
     <div className="flex flex-col dm-sans hover:bg-[#191B2A] p-2 rounded-sm cursor-pointer duration-300 items-center">
       {playMoney !== null ? (
         <>
@@ -49,6 +51,7 @@ const Cash = () => {
         </>
       )}
     </div>
+    </Link>
   )
 }
 

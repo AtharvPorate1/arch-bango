@@ -263,9 +263,9 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-darkbg text-white p-4 md:p-8">
       <div className="max-w-[90%] md:max-w-[70%] mx-auto">
-        <Link href="#" className="inline-flex w-full justify-center my-10 items-center text-2xl font-bold text-ow1 transition-colors">
+        {/* <Link href="#" className="inline-flex w-full justify-center my-10 items-center text-2xl font-bold text-ow1 transition-colors">
           <span className="hover:underline">[ Go Back ]</span>
-        </Link>
+        </Link> */}
 
         <Card className="bg-darkbg2 border-[1px] border-gray-800 p-6 md:p-8 rounded-xl">
           <div className="flex justify-center mb-8">
