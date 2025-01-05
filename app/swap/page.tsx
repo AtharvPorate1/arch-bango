@@ -30,12 +30,12 @@ export default function SwapInterface() {
   return (
     <div className="w-full dm-sans max-w-md mx-auto bg-[#0c0c0c]">
       {/* Main Container with orange glow */}
-      <div className="rounded-xl overflow-hidden border border-[#F5841F]/20 shadow-[0_0_15px_rgba(245,132,31,0.1)]">
+      <div className="rounded-xl overflow-hidden border border-[#F5841F]">
         {/* Tab Navigation */}
         <div className="grid grid-cols-2">
           <button
             onClick={() => setActiveTab('swap')}
-            className={`p-4 text-center transition-colors ${
+            className={`p-4 border-b border-r  border-[#F5841F] text-center transition-colors ${
               activeTab === 'swap' ? 'bg-[#F5841F] text-white' : 'bg-[#141414] text-gray-400'
             }`}
           >
@@ -43,7 +43,7 @@ export default function SwapInterface() {
           </button>
           <button
             onClick={() => setActiveTab('liquidity')}
-            className={`p-4 text-center transition-colors ${
+            className={`p-4 text-center border-b border-[#F5841F] transition-colors ${
               activeTab === 'liquidity' ? 'bg-[#F5841F] text-white' : 'bg-[#141414] text-gray-400'
             }`}
           >
