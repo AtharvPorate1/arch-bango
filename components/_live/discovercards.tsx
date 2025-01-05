@@ -156,7 +156,7 @@ export const CardSkeleton = () => (
   </Card>
 )
 
-const ITEMS_PER_PAGE = 12
+const ITEMS_PER_PAGE = 9 
 
 export default function Component() {
   const [isLoading, setIsLoading] = useState(true)
@@ -166,7 +166,7 @@ export default function Component() {
 
   const fetchData = async (page: number) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events?status=ACTIVE&sortBy=createdAt:desc&limit=12&page=${page}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events?status=ACTIVE&sortBy=createdAt:desc&limit=9&page=${page}`)
       const data = await response.json()
       if (!Array.isArray(data)) {
         throw new Error('Unexpected API response format')
@@ -207,14 +207,14 @@ export default function Component() {
   return (
     <div className="bg-[#0c0c0c] text-ow1 dm-sans md:p-8">
       <div className="md:max-w-7xl mx-auto">
-
       <div className="relative max-w-3xl mb-20 mx-auto w-full">
-        <Input
+        <Input 
           placeholder="Search Events/Bets."
           className="w-full bg-[#1c1c1f] text-white py-8 placeholder:text-gray-400 h-12 pr-12 border-[#FF4B00]/40 focus-visible:ring-[#ff4d00]"
         />
         <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-[#FF4B00]/40" />
-      </div> 
+      </div>
+        
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(ITEMS_PER_PAGE)].map((_, index) => (
