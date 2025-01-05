@@ -103,7 +103,7 @@ export default function EventDetailPage() {
   // Fetch Event Data
   const fetchEventData = useCallback(async () => {
     try {
-      const response = await fetch(`https://backend-tkuv.onrender.com/v1/events/${id}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events/${id}`)
       if (!response.ok) {
         throw new Error('Failed to fetch event data')
       }

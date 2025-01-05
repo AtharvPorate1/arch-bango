@@ -48,7 +48,7 @@ export default function DiscoverSection() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://backend-tkuv.onrender.com/v1/events?status=ACTIVE&limit=10&page=1')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events?status=ACTIVE&limit=10&page=1`)
         const data = await response.json()
         console.log("data : ",data)
         // toast.success("Data fetched succesfully")

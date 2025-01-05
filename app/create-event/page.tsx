@@ -14,8 +14,7 @@ import { Instruction, Message, MessageUtil, PubkeyUtil, RpcConnection } from "@s
 import * as borsh from 'borsh';
 import { useAtom } from 'jotai'
 import { useWallet } from '@/hooks/useWallet'
-// import { useToast } from '@/hooks/use-toast'
-
+import "uuid"
 
 export default function Component() {
   const [eventTitle, setEventTitle] = useState('')
@@ -44,7 +43,7 @@ export default function Component() {
     formData.append('image', image)
     formData.append('type', 'events')
 
-    const response = await fetch('https://backend-tkuv.onrender.com/v1/upload', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}upload`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -90,25 +89,26 @@ export default function Component() {
 
     
       // Create the event
-      const response = await fetch('https://backend-tkuv.onrender.com/v1/events', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(eventData),
-      })
+      // const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Authorization': `Bearer ${accessToken}`,
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(eventData),
+      // })
 
-      if (!response.ok) {
-        throw new Error('Failed to create event')
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to create event')
+      // }
 
-      const jsn: any = await response.json();
+      // const jsn: any = await response.json();
 
       // Web3 Code
 
       const uniqueId = new Uint8Array(32).fill(0); // Fill with your ID bytes
       const uniqueIdBytes = new TextEncoder().encode((jsn.unique_id as string).replace("-",""));
+      const uniqueIdBytes = new TextEncoder().encode((uuid4).replace("-",""));
       uniqueId.set(uniqueIdBytes.slice(0, 32));
 
       const schema = {
