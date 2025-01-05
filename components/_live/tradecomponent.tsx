@@ -139,8 +139,11 @@ export default function TradeComponent({
       const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
       const contractAddress = await client.getAccountAddress(PubkeyUtil.fromHex(publicKey))
       
-
+      console.log(contractAddress)
       const txid = await window.unisat.sendBitcoin(contractAddress, parseInt(price))
+
+
+      // return;
 
       if (txid.length === 0) {
         toast.error("couldn't place bet")
