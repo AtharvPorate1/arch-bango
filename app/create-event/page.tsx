@@ -66,8 +66,7 @@ export default function Component() {
       }        
 
       // Combine date and time
-      // const expiryDate = new Date(`${endDate}T${endTime}:00`)
-      const expiryDate = new Date("2024-12-12T12:12:00")
+      const expiryDate = new Date(`${endDate}T${endTime}:00`)
 
       // Web3 Code
       const uid = uuid4();
