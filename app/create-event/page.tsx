@@ -305,10 +305,6 @@ export default function Component() {
               {isSubmitting ? 'Creating Event...' : 'Create Event'}
             </Button>
           </form>
-              <Button
-              onClick={handleSubmit}
-              className="w-full bg-o1 hover:bg-orange-600"
-            >dasd</Button>
         </CardContent>
       </Card>
     </div>
