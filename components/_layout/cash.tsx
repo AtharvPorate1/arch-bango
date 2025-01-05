@@ -7,41 +7,21 @@ const Cash = () => {
 
   useEffect(() => {
     const fetchPlayMoney = async () => {
-      const accessToken = localStorage.getItem("accessToken")
-      if (!accessToken) {
-        console.error("No access token found")
-        setPlayMoney(null)
-        return
-      }
-      try {
-        const storedUsername = localStorage.getItem("username")
-        if (!storedUsername) {
-          throw new Error("No username found in localStorage")
-        }
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}users?username=${storedUsername}&limit=10&page=1`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        )
+      let balance = await window.unisat.getBalance();
+      let total_balance = balance.total;
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data")
-        }
+      // Fetch latest BTC Prices
 
-        const data = await response.json()
-        if (data && data.length > 0) {
-          setPlayMoney(data[0].playmoney)
-        } else {
-          throw new Error("No user data found")
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error)
-        setPlayMoney(null)
-      }
+      const resp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}utils/fetch-btc-price`);
+      const btcPriceJsn = await resp.json();
+      const btcPrice: number = btcPriceJsn.price;
+
+      const cost_of_1_sat = btcPrice / 100000000
+      const totalMoneyOwned = total_balance * cost_of_1_sat
+
+      setPlayMoney(totalMoneyOwned);
+
     }
 
     const intervalId = setInterval(() => {
