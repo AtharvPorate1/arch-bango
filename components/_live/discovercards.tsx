@@ -1,13 +1,12 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Users, MessageSquare, ChevronLeft, ChevronRight, Star, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MessageSquare, Search, Star } from 'lucide-react'
 import { Input } from '../ui/input'
-import Fuse from 'fuse.js'
+
 export type CardData = {
   id: number
   unique_id: string
@@ -160,18 +159,15 @@ export const CardSkeleton = () => (
 const ITEMS_PER_PAGE = 12
 
 export default function Component() {
-  const [sortOrder, setSortOrder] = useState('desc')
   const [isLoading, setIsLoading] = useState(true)
-  const [originalCards, setOriginalCards] = useState<CardData[]>([])
-  const [sortedCards, setSortedCards] = useState<CardData[]>([])
+  const [cards, setCards] = useState<CardData[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const fetchData = async () => {
+
+  const fetchData = async (page: number) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events?status=ACTIVE&sortBy=createdAt:desc&limit=64`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events?status=ACTIVE&sortBy=createdAt:desc&limit=12&page=${page}`)
       const data = await response.json()
-      console.log(data)
       if (!Array.isArray(data)) {
         throw new Error('Unexpected API response format')
       }
@@ -188,9 +184,8 @@ export default function Component() {
         setIsLoading(true)
         setError(null)
 
-        const allData: CardData[] = await fetchData()
-        setOriginalCards(allData)
-        setSortedCards(sortOrder === 'desc' ? allData : [...allData].reverse())
+        const data: CardData[] = await fetchData(currentPage)
+        setCards(data)
         setIsLoading(false)
       } catch (error) {
         setError('Failed to fetch data. Please try again later.')
@@ -200,48 +195,26 @@ export default function Component() {
     }
 
     loadData()
-  }, [])
-
-  const fuse = useMemo(() => new Fuse(originalCards, {
-    keys: ['question', 'description', 'user.username'],
-    threshold: 0.3,
-  }), [originalCards])
-
-  useEffect(() => {
-    if (searchQuery) {
-      const searchResults = fuse.search(searchQuery).map(result => result.item)
-      setSortedCards(searchResults)
-    } else {
-      setSortedCards(sortOrder === 'desc' ? originalCards : [...originalCards].reverse())
-    }
-    setCurrentPage(1)
-  }, [searchQuery, sortOrder, originalCards, fuse])
+  }, [currentPage])
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage)
   }
 
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const endIndex = startIndex + ITEMS_PER_PAGE
-  const displayedCards = sortedCards.slice(startIndex, endIndex)
-
-  const totalPages = Math.ceil(sortedCards.length / ITEMS_PER_PAGE)
-  const hasNextPage = currentPage < totalPages
+  const hasNextPage = cards.length === ITEMS_PER_PAGE
   const hasPrevPage = currentPage > 1
 
   return (
     <div className="bg-[#0c0c0c] text-ow1 dm-sans md:p-8">
       <div className="md:max-w-7xl mx-auto">
-        <div className="relative max-w-3xl mx-auto w-full mb-24">
-          <Input
-            placeholder="Search Events/Bets."
-            className="w-full bg-[#1c1c1f] text-white py-8 placeholder:text-gray-400 h-12 pr-12 border-[#FF4B00]/40 focus-visible:ring-[#ff4d00]"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-[#FF4B00]/40" />
-        </div>
-        
+
+      <div className="relative max-w-3xl mb-20 mx-auto w-full">
+        <Input
+          placeholder="Search Events/Bets."
+          className="w-full bg-[#1c1c1f] text-white py-8 placeholder:text-gray-400 h-12 pr-12 border-[#FF4B00]/40 focus-visible:ring-[#ff4d00]"
+        />
+        <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-7 w-7 text-[#FF4B00]/40" />
+      </div> 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(ITEMS_PER_PAGE)].map((_, index) => (
@@ -252,7 +225,7 @@ export default function Component() {
           <div className="text-center text-red-500">{error}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {displayedCards.map((card) => (
+            {cards.map((card) => (
               <PredictionCard key={card.id} {...card} />
             ))}
           </div>
@@ -269,7 +242,7 @@ export default function Component() {
               <ChevronLeft className="h-4 w-4 text-black" />
             </Button>
             <span className="text-sm">
-              Page {currentPage} of {totalPages}
+              Page {currentPage}
             </span>
             <Button
               variant="outline"
@@ -285,3 +258,4 @@ export default function Component() {
     </div>
   )
 }
+
