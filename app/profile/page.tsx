@@ -75,7 +75,7 @@ const PredictionCard: React.FC<Event & { showEndButton: boolean }> = ({ id, imag
   };
 
   return (
-    <div className="relative">
+    <div className="relative bg-[#0c0c0c]">
       <Link href={`/discover/${id}`} className="block">
         <div 
           className="group cursor-pointer"
@@ -215,7 +215,7 @@ export default function Component() {
   }, [eventStatus, userData?.id])
 
   const SkeletonLoading = () => (
-    <div className="min-h-screen bg-darkbg text-white p-4 md:p-8">
+    <div className="min-h-screen bg-[#0c0c0c] text-white p-4 md:p-8">
       <div className="max-w-[90%] md:max-w-[70%] mx-auto">
         <Skeleton className="h-8 w-32 bg-gray-700 my-10" />
 

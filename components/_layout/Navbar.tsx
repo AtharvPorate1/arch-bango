@@ -75,7 +75,7 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* <div className="hidden md:flex items-center text-lg font-medium gap-8">
+          <div className="hidden md:flex items-center text-lg font-medium gap-8">
             <Link href="/sports" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
               Sports 
             </Link>
@@ -91,7 +91,7 @@ export default function Navbar() {
             <Link href="/business" className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors">
               Business 
             </Link>
-          </div> */}
+          </div>
 
           <div className="flex items-center gap-4">
             <Cash />
