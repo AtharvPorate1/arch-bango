@@ -62,7 +62,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
       //   purposes: [AddressPurpose.Ordinals],
       //   message: 'Connect to Predictr Market',
       // });
-
+      
+      // Switch chain to ENV network
+      await window.unisat.switchChain(process.env.NEXT_PUBLIC_BITCOIN_NETWORK);
+      
       const result = await window.unisat.requestAccounts(); 
       const pubKey = await window.unisat.getPublicKey();
 
@@ -87,6 +90,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
         privateKey: null,
         address: result[0],
       };
+
+      console.log(pubKey)
 
       // Update zustand store
       setWalletData(newState);

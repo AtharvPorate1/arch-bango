@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { toast } from "sonner"
+import { client } from '@/lib/utils'
+import { PubkeyUtil } from '@saturnbtcio/arch-sdk'
 
 type EventData = {
   id: number
@@ -132,7 +134,13 @@ export default function TradeComponent({
         totalAmountInvesting = parseFloat(price) * (outcome?.btcPrice! / 100000000)
       }
 
-      const txid = await window.unisat.sendBitcoin("tb1qrn7tvhdf6wnh790384ahj56u0xaa0kqgautnnz", parseInt(price))
+
+      const publicKeyResp: string = await window.unisat.getPublicKey();
+      const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
+      const contractAddress = await client.getAccountAddress(PubkeyUtil.fromHex(publicKey))
+      
+
+      const txid = await window.unisat.sendBitcoin(contractAddress, parseInt(price))
 
       if (txid.length === 0) {
         toast.error("couldn't place bet")

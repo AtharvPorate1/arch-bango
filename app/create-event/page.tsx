@@ -12,10 +12,8 @@ import Link from 'next/link'
 import { PROGRAM_PUBKEY } from "@/app/constants";
 import { Instruction, Message, MessageUtil, PubkeyUtil, RpcConnection } from "@saturnbtcio/arch-sdk";
 import * as borsh from 'borsh';
-import { useAtom } from 'jotai'
-import { useWallet } from '@/hooks/useWallet'
 import { v4 as uuid4 } from "uuid"
-import Wallet, { AddressPurpose } from "sats-connect";
+import { client } from '@/lib/utils'
 
 export default function Component() {
   const [eventTitle, setEventTitle] = useState('')
@@ -27,10 +25,7 @@ export default function Component() {
   const [endTime, setEndTime] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const accountPubkey = PubkeyUtil.fromHex(process.env.NEXT_PUBLIC_EVENT_ACCOUNT_PUBKEY!);
-  const client = new RpcConnection(process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:9002");
-  const wallet = useWallet();
 
-  client.sendTransaction
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImage(e.target.files[0])
@@ -71,7 +66,8 @@ export default function Component() {
       }        
 
       // Combine date and time
-      const expiryDate = new Date(`${endDate}T${endTime}:00`)
+      // const expiryDate = new Date(`${endDate}T${endTime}:00`)
+      const expiryDate = new Date("2024-12-12T12:12:00")
 
       // Web3 Code
       const uid = uuid4();
@@ -93,10 +89,11 @@ export default function Component() {
         function_number: 1,
         unique_id: Array.from(uniqueId),
         expiry_timestamp: Math.floor(expiryDate.getTime() / 1000), // Convert to Unix timestamp (seconds),
-        num_outcomes: outcomes.length,
+        num_outcomes: 2,
       };
 
-      const publicKey = await window.unisat.getPublicKey();
+      const publicKeyResp: string = await window.unisat.getPublicKey();
+      const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
 
       const instruction: Instruction = {
         program_id: PubkeyUtil.fromHex(PROGRAM_PUBKEY!),
@@ -107,7 +104,7 @@ export default function Component() {
             is_writable: true
           },
           {
-            pubkey: PubkeyUtil.fromHex(wallet.publicKey!),
+            pubkey: PubkeyUtil.fromHex(publicKey),
             is_signer: true,
             is_writable: false
           }
@@ -117,16 +114,16 @@ export default function Component() {
 
 
       const messageObj: Message = {
-        signers: [PubkeyUtil.fromHex(wallet.publicKey!)],
+        signers: [PubkeyUtil.fromHex(publicKey)],
         instructions: [instruction],
       };
 
       const messageHash = MessageUtil.hash(messageObj);
-      const signature = await wallet.signMessage(Buffer.from(messageHash).toString('hex'));
-      // const signature: any = await window.unisat.signMessage(Buffer.from(messageHash).toString('hex'))
-
-
+      const signature: any = await window.unisat.signMessage(Buffer.from(messageHash).toString('hex'), "bip322-simple")
       const signatureBytes = new Uint8Array(Buffer.from(signature, 'base64')).slice(2);
+
+      console.log(JSON.stringify(messageObj))
+      console.log(signatureBytes.toString())
 
       const result = await client.sendTransaction({
         version: 0,
@@ -134,8 +131,12 @@ export default function Component() {
         message: messageObj,
       });
 
+      console.log(result)
 
-      console.log(result, "====");
+      if (result.length < 60) {
+        toast.error("Couldn't call smart contract");
+        return;
+      }
 
       // First upload the image
       const imageUrl = await uploadImage(accessToken)
@@ -152,8 +153,6 @@ export default function Component() {
         ...(imageUrl && { image: imageUrl }),
       }
 
-
-
       // Create the event
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}events`, {
         method: 'POST',
@@ -167,8 +166,6 @@ export default function Component() {
       if (!response.ok) {
         throw new Error('Failed to create event')
       }
-
-      const jsn: any = await response.json();
 
 
       toast.success("Event created succesfully, Check discover Page")
@@ -308,6 +305,10 @@ export default function Component() {
               {isSubmitting ? 'Creating Event...' : 'Create Event'}
             </Button>
           </form>
+              <Button
+              onClick={handleSubmit}
+              className="w-full bg-o1 hover:bg-orange-600"
+            >dasd</Button>
         </CardContent>
       </Card>
     </div>
