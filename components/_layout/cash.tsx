@@ -26,7 +26,7 @@ const Cash = () => {
 
     const intervalId = setInterval(() => {
       fetchPlayMoney()
-    }, 5000)
+    }, 10000)
 
     fetchPlayMoney()
 
