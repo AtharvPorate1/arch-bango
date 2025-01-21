@@ -9,9 +9,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { toast } from "sonner"
 import { client } from '@/lib/utils'
 import { PubkeyUtil } from '@saturnbtcio/arch-sdk'
+import { fetchEventData, fetchTokenData, handleBuyOutcome, handleSellOutcome } from '@/utils/rpcHelpers'
 
 type EventData = {
   id: number
+  unique_id: string,
   outcomes: {
     id: number
     outcome_title: string
@@ -122,6 +124,7 @@ export default function TradeComponent({
     }
 
     const selectedOutcomeData = eventData.outcomes.find(o => o.outcome_title === selectedOutcome)
+
     if (!selectedOutcomeData) {
       console.error("Selected outcome not found in event data")
       return
@@ -134,34 +137,45 @@ export default function TradeComponent({
         totalAmountInvesting = parseFloat(price) * (outcome?.btcPrice! / 100000000)
       }
 
+      // const publicKeyResp: string = await window.unisat.getPublicKey();
+      // const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
+      // const contractAddress = await client.getAccountAddress(PubkeyUtil.fromHex(publicKey))
 
-      const publicKeyResp: string = await window.unisat.getPublicKey();
-      const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
-      const contractAddress = await client.getAccountAddress(PubkeyUtil.fromHex(publicKey))
-      
-      console.log(contractAddress)
-      const txid = await window.unisat.sendBitcoin(contractAddress, parseInt(price))
+      // const txid = await window.unisat.sendBitcoin(contractAddress, parseInt(price))
 
+      const getOutcomePriceEndpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/${eventData.id}`
+      const resp = await fetch(getOutcomePriceEndpoint);
+      const jsn = await resp.json();
+      const outcome = jsn.find((outcomeInfo: any) => outcomeInfo.outcomeId === selectedOutcomeData.id)
 
-      // return;
-
-      if (txid.length === 0) {
-        toast.error("couldn't place bet")
-        return
+      if (isBuySelected) {
+        let result = await handleBuyOutcome(eventData.unique_id, Math.floor(outcome.price * parseFloat(price)), selectedOutcomeData.id - eventData.outcomes[0].id);
+        console.log(result, "++++++++");
+        if (!result) {
+          return;
+        }
+      } else {
+        let result = await handleSellOutcome(eventData.unique_id, Math.floor(outcome.price * parseFloat(price)), selectedOutcomeData.id - eventData.outcomes[0].id);
+        console.log(result, "++++++++");
+        if (!result) {
+          return;
+        }
       }
+
+      return;
 
       const endpoint = isBuySelected ? `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/buy` : `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/sell`
       const body = isBuySelected
         ? {
-            eventId: eventData.id,
-            outcomeId: selectedOutcomeData.id,
-            usdtAmount: totalAmountInvesting
-          }
+          eventId: eventData.id,
+          outcomeId: selectedOutcomeData.id,
+          usdtAmount: totalAmountInvesting
+        }
         : {
-            eventId: eventData.id,
-            outcomeId: selectedOutcomeData.id,
-            sharesToSell: shares
-          }
+          eventId: eventData.id,
+          outcomeId: selectedOutcomeData.id,
+          sharesToSell: shares
+        }
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -185,6 +199,13 @@ export default function TradeComponent({
       toast.error("Some error occurred, order is not placed!")
     }
   }
+
+  useEffect(() => {
+    fetchTokenData();
+    const interval = setInterval(fetchTokenData, 5000);
+    return () => clearInterval(interval);
+  }, [fetchTokenData]);
+
 
   const getOutcomePrice = (outcomeId: number) => {
     const outcomePrice = outcomePrices.find(p => p.outcomeId === outcomeId)
@@ -215,13 +236,13 @@ export default function TradeComponent({
           <>
             {!isDrawer && (
               <div className="grid grid-cols-2 bg-darkbg">
-                <Button 
+                <Button
                   className={`w-full h-10 rounded-none scale-x-[1.07] md:-translate-x-2 font-medium hover:font-medium rounded-t-md ${isBuySelected ? 'bg-[#4ADE80] text-black' : 'bg-darkbg2 text-white hover:text-black'} hover:z-10 hover:bg-[#4ADE80] shadow-none`}
                   onClick={() => setIsBuySelected(true)}
                 >
                   BUY
                 </Button>
-                <Button 
+                <Button
                   className={`w-full h-10 rounded-none scale-x-[1.07] md:translate-x-2 font-medium hover:font-medium ${!isBuySelected ? 'bg-[#F87171] text-black' : 'bg-darkbg2 text-white hover:text-black'} rounded-t-md shadow-none hover:bg-[#F87171]`}
                   onClick={() => setIsBuySelected(false)}
                 >
@@ -232,22 +253,20 @@ export default function TradeComponent({
             <div>
               <h3 className="mb-2">Outcome</h3>
               <div
-                className={` ${
-                  eventData?.outcomes.length! >= 3 ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-2 gap-2'
-                }`}
+                className={` ${eventData?.outcomes.length! >= 3 ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-2 gap-2'
+                  }`}
               >
                 {eventData?.outcomes.map((outcome, index) => (
                   <Button
                     key={outcome.id}
-                    className={`w-full py-5 bg-darkbg ${
-                      selectedOutcome === outcome.outcome_title
+                    className={`w-full py-5 bg-darkbg ${selectedOutcome === outcome.outcome_title
                         ? index % 2 === 0
                           ? 'bg-[#4ADE80] text-black hover:bg-[#4ADE80]'
                           : 'bg-[#F87171] text-black hover:bg-[#F87171]'
                         : index % 2 === 0
-                        ? 'text-[#4ADE80] hover:text-[#4ADE80] hover:bg-darkbg'
-                        : 'text-[#F87171] hover:bg-darkbg hover:text-[#F87171]'
-                    }`}
+                          ? 'text-[#4ADE80] hover:text-[#4ADE80] hover:bg-darkbg'
+                          : 'text-[#F87171] hover:bg-darkbg hover:text-[#F87171]'
+                      }`}
                     onClick={() => setSelectedOutcome(outcome.outcome_title)}
                   >
                     <div className="flex gap-2 items-center">
@@ -261,7 +280,7 @@ export default function TradeComponent({
             {isBuySelected ? (
               <div>
                 <h3 className="mb-2">Price</h3>
-                <Input 
+                <Input
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
@@ -286,12 +305,12 @@ export default function TradeComponent({
               <div>
                 <h3 className="mb-2">Shares</h3>
                 <div className="flex justify-center flex-col">
-                  <Input 
+                  <Input
                     type="number"
                     value={shares}
                     onChange={(e) => setShares(parseInt(e.target.value) || 0)}
                     className="bg-darkbg border-none mb-2 flex self-center"
-                  />       
+                  />
                   <p className="text-sm text-gray-400 mt-2">
                     Current Price: ${calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0).toFixed(7)}
                   </p>
@@ -308,18 +327,18 @@ export default function TradeComponent({
                     <Button onClick={() => setShares(shares)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
                       100 %
                     </Button>
-                  </div>          
+                  </div>
                 </div>
               </div>
             )}
             <div>
               <p className="text-sm text-gray-400">
-                {isBuySelected 
-                  ? `${calculateSharePrice(eventData?.outcomes[0]?.id || 0).toFixed(7)} (Shares)` 
+                {isBuySelected
+                  ? `${calculateSharePrice(eventData?.outcomes[0]?.id || 0).toFixed(7)} (Shares)`
                   : `${(parseFloat(price) * shares).toFixed(2)} SATS`}
               </p>
-              <Button 
-                className="w-full bg-[#EC762E] hover:bg-orange-600 mt-2" 
+              <Button
+                className="w-full bg-[#EC762E] hover:bg-orange-600 mt-2"
                 onClick={handlePlaceOrder}
                 disabled={!address || isDisconnected}
               >
@@ -328,12 +347,12 @@ export default function TradeComponent({
             </div>
             <div className="flex justify-between text-sm">
               <span>Total</span>
-              <span>$ {isBuySelected ? (parseFloat(price) * (outcomePrices[0]?.btcPrice!/100000000)).toFixed(2) : (calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)}</span>
+              <span>$ {isBuySelected ? (parseFloat(price) * (outcomePrices[0]?.btcPrice! / 100000000)).toFixed(2) : (calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)}</span>
             </div>
             {isBuySelected && (
               <div className="flex justify-between text-sm">
                 <span>Potential Return</span>
-                <span className="text-green-500">$ {(parseFloat(price) * (outcomePrices[0]?.btcPrice!/100000000) * 12) / 100} ({((calculateSharePrice(eventData?.outcomes[0]?.id || 0) * shares / (parseFloat(price) * shares) - 1) * 12).toFixed(2)}%)</span>
+                <span className="text-green-500">$ {(parseFloat(price) * (outcomePrices[0]?.btcPrice! / 100000000) * 12) / 100} ({((calculateSharePrice(eventData?.outcomes[0]?.id || 0) * shares / (parseFloat(price) * shares) - 1) * 12).toFixed(2)}%)</span>
               </div>
             )}
             {!isBuySelected && (

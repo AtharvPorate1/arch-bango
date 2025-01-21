@@ -12,6 +12,7 @@ import { walletStore } from '@/store/authStore'
 // import FaucetButton from '../Faucet'
 import { Steps } from 'intro.js-react'
 import 'intro.js/introjs.css'
+import { handleRegisterAccount } from '@/utils/rpcHelpers'
 
 
 interface AuthModalProps {
@@ -137,6 +138,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
           localStorage.setItem('walletAddress', data.user.wallet_address)
 
           setUsername(data.user.username)
+
+          await handleRegisterAccount();
+
         } else {
           throw new Error('Failed to get token from API')
         }

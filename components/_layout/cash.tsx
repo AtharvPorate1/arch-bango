@@ -1,35 +1,38 @@
 "use client"
 
 import Link from "next/link"
+import { fetchTokenData } from "@/utils/rpcHelpers";
+import { PubkeyUtil } from "@saturnbtcio/arch-sdk";
 import { useEffect, useState } from "react"
 
 const Cash = () => {
-  const [playMoney, setPlayMoney] = useState<number | null>(null)
+  const [wallets, setWallets] = useState<any[]>([]);
+  const [balance, setBalance] = useState<number>(0);
+  
+  const getMyBalance = async () => {
+    
+    const publicKeyResp: string = await window.unisat.getPublicKey();
+    const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
+    let pubKeyBytes = Array.from(PubkeyUtil.fromHex(publicKey));
+    const data: any = await fetchTokenData();
+    const balances: Map<number[], bigint> = data.balances;
+
+    balances.forEach((value, key) => {
+      if (key.toString() === pubKeyBytes.toString()) {
+        setBalance(Number(value));
+      }
+    });
+    
+
+  }
 
   useEffect(() => {
-    const fetchPlayMoney = async () => {
-
-      let balance = await window.unisat.getBalance();
-      let total_balance = balance.total;
-
-      // Fetch latest BTC Prices
-
-      const resp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}utils/fetch-btc-price`);
-      const btcPriceJsn = await resp.json();
-      const btcPrice: number = btcPriceJsn.price;
-
-      const cost_of_1_sat = btcPrice / 100000000
-      const totalMoneyOwned = total_balance * cost_of_1_sat
-
-      setPlayMoney(totalMoneyOwned);
-
-    }
 
     const intervalId = setInterval(() => {
-      fetchPlayMoney()
+      getMyBalance()
     }, 10000)
 
-    fetchPlayMoney()
+    getMyBalance()
 
     return () => clearInterval(intervalId)
   }, [])
@@ -37,19 +40,10 @@ const Cash = () => {
   return (
     <Link href="/profile">
     <div className="flex flex-col dm-sans hover:bg-[#191B2A] p-2 rounded-sm cursor-pointer duration-300 items-center">
-      {playMoney !== null ? (
-        <>
-          <div className="text-[#EC762E] text-md font-medium">
-            ${playMoney.toFixed(2)}
-          </div>
-          <div className="text-gray-400 text-xs mt-1">Portfolio</div>
-        </>
-      ) : (
-        <>
-          <div className="text-[#EC762E] text-md font-medium">$0.00</div>
-          <div className="text-gray-400 text-xs mt-1">Login</div>
-        </>
-      )}
+      <div className="text-[#EC762E] text-md font-medium">
+        ${balance.toFixed(2)}
+      </div>
+      <div className="text-gray-400 text-xs mt-1">Portfolio</div>
     </div>
     </Link>
   )

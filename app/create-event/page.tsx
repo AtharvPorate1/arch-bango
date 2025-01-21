@@ -72,7 +72,7 @@ export default function Component() {
       const uid = uuid4();
 
       const uniqueId = new Uint8Array(32).fill(0); // Fill with your ID bytes
-      const uniqueIdBytes = new TextEncoder().encode((uid as string).replace("-", ""));
+      const uniqueIdBytes = new TextEncoder().encode((uid as string).replaceAll("-", ""));
       uniqueId.set(uniqueIdBytes.slice(0, 32));
 
       const schema = {
@@ -130,8 +130,8 @@ export default function Component() {
         message: messageObj,
       });
 
-      console.log(result)
-
+      console.log(uid);
+      return;
       if (result.length < 60) {
         toast.error("Couldn't call smart contract");
         return;
