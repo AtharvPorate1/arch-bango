@@ -14,6 +14,7 @@ import { Instruction, Message, MessageUtil, PubkeyUtil, RpcConnection } from "@s
 import * as borsh from 'borsh';
 import { v4 as uuid4 } from "uuid"
 import { client } from '@/lib/utils'
+import { handleCreateNewToken } from '@/utils/rpcHelpers'
 
 export default function Component() {
   const [eventTitle, setEventTitle] = useState('')
@@ -302,6 +303,12 @@ export default function Component() {
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Creating Event...' : 'Create Event'}
+            </Button>
+            <Button
+              onClick={handleCreateNewToken}
+              className="w-full bg-o1 hover:bg-orange-600"
+            >
+              Create Token
             </Button>
           </form>
         </CardContent>

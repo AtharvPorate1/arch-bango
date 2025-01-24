@@ -374,3 +374,84 @@ export const handleRegisterAccount = async () => {
     return false;
   }
 };
+
+
+
+export const handleCreateNewToken = async () => {
+
+  try {
+
+    const publicKeyResp: string = await window.unisat.getPublicKey();
+    const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
+
+
+    const owner = new Uint8Array(32).fill(0); // Fill with your ID bytes
+    const ownerBytes = new TextEncoder().encode(publicKey);
+    owner.set(ownerBytes.slice(0, 32));
+
+    const supply = BigInt(1000000);
+    const ticker = "PUSD"
+    const decimals = 10;
+
+
+    const schema = {
+      struct: {
+        function_number: 'u8',
+        owner: { array: { type: 'u8', len: 32 } },
+        supply: 'u64',
+        ticker: 'string',
+        decimals: 'u8'
+      }
+    };
+
+    const data2 = {
+      function_number: 5,
+      owner: Array.from(owner),
+      supply,
+      ticker,
+      decimals: decimals
+    };
+
+
+    const serialized_data = borsh.serialize(schema, data2);
+
+    const instruction: Instruction = {
+      program_id: PubkeyUtil.fromHex(process.env.NEXT_PUBLIC_PROGRAM_PUBKEY!),
+      accounts: [
+        {
+          pubkey: PubkeyUtil.fromHex(process.env.NEXT_PUBLIC_TOKEN_ACCOUNT_PUBKEY!),
+          is_signer: false,
+          is_writable: true,
+        },
+        {
+          pubkey: PubkeyUtil.fromHex(publicKey),
+          is_signer: true,
+          is_writable: false
+        }
+      ],
+      data: serialized_data,
+    };
+
+    const messageObj: Message = {
+      signers: [PubkeyUtil.fromHex(publicKey)],
+      instructions: [instruction],
+    };
+
+    const messageHash = MessageUtil.hash(messageObj);
+    const signature: any = await window.unisat.signMessage(Buffer.from(messageHash).toString('hex'), "bip322-simple")
+    const signatureBytes = new Uint8Array(Buffer.from(signature, 'base64')).slice(2);
+
+    const result = await client.sendTransaction({
+      version: 0,
+      signatures: [signatureBytes],
+      message: messageObj,
+    });
+
+    console.log(result, "++++++++");
+    return true;
+
+  } catch (error) {
+    console.error('Error creating event:', error);
+    return false;
+  }
+};
