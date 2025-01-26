@@ -315,14 +315,16 @@ export default function Component() {
               </div>
 
               {/* Buttons positioned absolutely */}
-              <div className="relative  flex flex-col gap-2">
-                <Button className="bg-[#EC762E] hover:bg-[#EC762E]/90 w-[106px] text-white h-[32px] ">Deposit</Button>
-                <Button
+              <div className="relative translate-y-1/4 flex flex-col gap-2">
+              <Link href="/swap">
+                <Button className="bg-[#EC762E] hover:bg-[#EC762E]/90 w-[106px] text-white h-[32px] ">Swap</Button>
+              </Link>
+                {/* <Button
                   variant="outline"
                   className="bg-[#151419] border-gray-700 text-gray-300 hover:text-gray-300 hover:bg-gray-800 w-[106px] h-[32px] "
                 >
                   Withdraw
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>
