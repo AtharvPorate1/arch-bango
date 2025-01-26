@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ExternalLink, Users, MessageSquare } from 'lucide-react'
+import { ExternalLink, Users, MessageSquare, PenSquare, Search, MoreVertical } from 'lucide-react'
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
@@ -261,85 +261,153 @@ export default function Component() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0c0c0c] text-white p-4 md:p-8">
+    <div className="min-h-screen bg-[#0c0c0c] text-white p-4 md:p-8 dm-sans">
       <div className="max-w-[90%] md:max-w-[70%] mx-auto">
-        {/* <Link href="#" className="inline-flex w-full justify-center my-10 items-center text-2xl font-bold text-ow1 transition-colors">
+        <Link href="#" className="inline-flex w-full justify-center my-10 items-center text-2xl font-bold text-ow1 transition-colors">
           <span className="hover:underline">[ Go Back ]</span>
-        </Link> */}
+        </Link>
 
         <Card className="bg-darkbg2 border-[1px] border-gray-800 p-6 md:p-8 rounded-xl">
-          <div className="flex justify-center mb-8">
-            <Card className="bg-transparent shadow-none border-none p-6 rounded-xl w-full sm:w-[450px]">
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                <div className="w-32 h-32 bg-gray-700 rounded-md overflow-hidden flex-shrink-0">
-                  <Image
-                    src={userData?.profile_pic || "/chill guy.webp"}
-                    alt="Profile"
-                    width={400}
-                    height={400}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col dm-sans items-center sm:items-start gap-2">
-                  <h2 className="text-[#F87171] text-md dm-sans">@{userData?.username || 'Username'}</h2>
-                  <p className="text-ow1 text-center sm:text-left">
-                    {userData?.about || 'No description available'}
-                  </p>
-                  <Button variant="outline" className="bg-black w-full hover:bg-black/80 text-[#F19236] border-none mt-2">
-                    Edit Profile
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </Button>
+        <div className="bg-[#1c1f2e]/50 p-6 rounded-xl mb-8">
+          <div className="flex flex-col sm:flex-row gap-6 relative">
+            {/* Left Section */}
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-1/2">
+              <div className="w-36 h-36 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
+                <Image
+                  src={
+                    userData?.profile_pic ||
+                    "" ||
+                    ""
+                  }
+                  alt="Profile"
+                  width={150}
+                  height={150}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-[#F87171] text-md">@{userData?.username || "KryptoNight"}</h2>
+                <p className="text-gray-300 text-sm">
+                  {userData?.about || "Lorem Ipsum Dolor Sit Amet Consectetur. Posuere Lorem Enim Eu Nun (BIO)"}
+                </p>
+                <Button
+                  variant="outline"
+                  className="bg-black w-fit hover:bg-black/80 text-[#F19236] border-none mt-2 text-sm"
+                >
+                  Edit Profile <PenSquare className="ml-2 h-4 w-4" /> 
+                </Button>
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div className="hidden sm:block w-px bg-gray-700 self-stretch mx-4" />
+
+            {/* Right Section */}
+            <div className="relative flex justify-around w-full translate-y-[15%] sm:w-1/2">
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-400 text-sm">Portfolio</span>
+                <div className="flex flex-col">
+                  <span className="text-white text-2xl font-semibold">$58.24</span>
+                  <span className="text-[#22c55e] text-sm">
+                    $10.04 (10%) <span className="text-gray-400">Today</span>
+                  </span>
                 </div>
               </div>
-            </Card>
+
+              {/* Buttons positioned absolutely */}
+              <div className="relative  flex flex-col gap-2">
+                <Button className="bg-[#EC762E] hover:bg-[#EC762E]/90 w-[106px] text-white h-[32px] ">Deposit</Button>
+                <Button
+                  variant="outline"
+                  className="bg-[#151419] border-gray-700 text-gray-300 hover:text-gray-300 hover:bg-gray-800 w-[106px] h-[32px] "
+                >
+                  Withdraw
+                </Button>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <Tabs defaultValue="transactions" className="w-full">
-            <TabsList className="bg-transparent gap-3 border-gray-800 w-full justify-center h-auto p-0 mb-6 overflow-x-auto flex-wrap">
-              <TabsTrigger
-                value="transactions"
-                className="dm-sans rounded-md px-4 py-2 bg-darkbg text-[#E6E7D7] data-[state=active]:bg-[#EC762E] data-[state=active]:text-darkbg"
-              >
-                Transactions
-              </TabsTrigger>
-              <TabsTrigger
-                value="participation"
-                className="dm-sans rounded-md px-4 py-2 bg-darkbg text-[#E6E7D7] data-[state=active]:bg-[#EC762E] data-[state=active]:text-darkbg"
-              >
-                Event Participation
-              </TabsTrigger>
-              <TabsTrigger
-                value="created"
-                className="dm-sans rounded-md px-4 py-2 bg-darkbg text-[#E6E7D7] data-[state=active]:bg-[#EC762E] data-[state=active]:text-darkbg"
-              >
-                Events Created
-              </TabsTrigger>
-              <TabsTrigger
-                value="rewards"
-                className="dm-sans rounded-md px-4 py-2 bg-darkbg text-[#E6E7D7] data-[state=active]:bg-[#EC762E] data-[state=active]:text-darkbg"
-              >
-                Rewards
-              </TabsTrigger>
-            </TabsList>
+        <Tabs defaultValue="transactions" className="w-full">
+          <TabsList className="bg-transparent border-b border-gray-700 w-full justify-start h-auto p-0 mb-6 overflow-x-auto">
+            <TabsTrigger
+              value="transactions"
+              className="text-gray-400 hover:text-gray-300 border-b-2 border-[#F19236] rounded-none px-4 py-2 flex-shrink-0 data-[state=active]:bg-transparent data-[state=active]:text-[#F19236] data-[state=inactive]:text-gray-400 data-[state=inactive]:border-b-transparent "
+            >
+              Transactions
+            </TabsTrigger>
+            <TabsTrigger
+              value="event-participation"
+              className="text-gray-400 hover:text-gray-300 rounded-none px-4 py-2 flex-shrink-0 data-[state=active]:bg-transparent data-[state=active]:text-[#F19236] data-[state=active]:border-b-2 data-[state=active]:border-[#F19236]"
+            >
+              Event Participation
+            </TabsTrigger>
+            <TabsTrigger
+              value="events-created"
+              className="text-gray-400 hover:text-gray-300 rounded-none px-4 py-2 flex-shrink-0 data-[state=active]:bg-transparent data-[state=active]:text-[#F19236] data-[state=active]:border-b-2 data-[state=active]:border-[#F19236]"
+            >
+              Events Created
+            </TabsTrigger>
+            <TabsTrigger
+              value="rewards"
+              className="text-gray-400 hover:text-gray-300 rounded-none px-4 py-2 flex-shrink-0 data-[state=active]:bg-transparent data-[state=active]:text-[#F19236] data-[state=active]:border-b-2 data-[state=active]:border-[#F19236]"
+            >
+              Rewards
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="transactions" className="focus-visible:outline-none">
-              <div className="w-3/4 mx-auto">
-                <div className="grid grid-cols-12 gap-4 text-sm text-ow1 border-b border-gray-800 pb-4">
-                  <div className="col-span-6 sm:col-span-6">Transactions</div>
-                  <div className="col-span-3 sm:col-span-3">Date</div>
-                  <div className="col-span-3 sm:col-span-3">Amount</div>
+          <TabsContent value="transactions" className="mt-0">
+            {/* Transactions Section */}
+            <div className="w-full mx-auto space-y-4">
+              {/* Search and Filter Bar */}
+              <div className="flex flex-wrap gap-4 items-center">
+                <div className="relative flex-1 min-w-[200px]">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    className="w-full bg-[#1c1f2e] border border-gray-700 rounded-md py-2 pl-4 pr-10 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-[#F19236]"
+                  />
+                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 </div>
-                <div className="space-y-4 mt-4">
-                  {[1, 2, 3].map((item) => (
-                    <div key={item} className="grid grid-cols-12 gap-4 text-sm">
-                      <div className="col-span-6 sm:col-span-6 text-white">Transaction #{item}</div>
-                      <div className="col-span-3 sm:col-span-3 text-ow1">2024-01-{item}</div>
-                      <div className="col-span-3 sm:col-span-3 text-orange-400">$100.00</div>
-                    </div>
-                  ))}
-                </div>
+                <Button variant="outline" className="bg-[#1c1f2e] border-gray-700 text-gray-300">
+                  Filter
+                </Button>
+                <Select defaultValue="all" >
+                  <SelectTrigger className="w-[100px] bg-[#1c1f2e] border-gray-700 text-gray-300">
+                    <SelectValue placeholder="All" className="" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1c1f2e] border-gray-700 ">
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="deposits">Deposits</SelectItem>
+                    <SelectItem value="withdrawals">Withdrawals</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select defaultValue="newest">
+                  <SelectTrigger className="w-[120px] bg-[#1c1f2e] border-gray-700 text-gray-300">
+                    <SelectValue placeholder="Newest" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1c1f2e] border-gray-700">
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="oldest">Oldest</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="ghost" className="p-2" aria-label="More options">
+                  <MoreVertical className="w-5 h-5 text-gray-500  border-gray-700" /> 
+                </Button>
               </div>
-            </TabsContent>
+
+              {/* Empty State */}
+              <div className="bg-[#1c1f2e]/50 rounded-lg min-h-[400px] flex flex-col items-center justify-center p-6">
+                <div className="w-16 h-16 mb-4 rounded-full bg-gray-800 flex items-center justify-center">
+                  <Search className="w-8 h-8 text-gray-500" /> 
+                </div>
+                <h3 className="text-gray-300 text-lg font-medium mb-2">No transactions found</h3>
+                <p className="text-gray-500 text-center max-w-md">
+                  There are no transactions to display at the moment. New transactions will appear here when they occur.
+                </p>
+              </div>
+            </div>
+          </TabsContent>
 
             <TabsContent value="participation" className="focus-visible:outline-none">
               <div className="w-3/4 mx-auto">
