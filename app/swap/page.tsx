@@ -1,31 +1,94 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowDownUp } from "lucide-react"
+import { toast } from 'sonner'
+import { client } from '@/lib/utils'
+import { PROGRAM_PUBKEY } from "@/app/constants";
+import { PubkeyUtil } from "@saturnbtcio/arch-sdk"
+import { handleMintTokens } from "@/utils/rpcHelpers"
 
 export default function SwapInterface() {
   const [fromToken, setFromToken] = useState<"BTC" | "PUSDC">("BTC")
   const [toToken, setToToken] = useState<"BTC" | "PUSDC">("PUSDC")
-  const [fromAmount, setFromAmount] = useState("")
-  const [toAmount, setToAmount] = useState("")
+  const [fromAmount, setFromAmount] = useState(0)
+  const [toAmount, setToAmount] = useState(0)
+  const [btcUSDPrice, setBtcUsdPrice] = useState(0);
+  const [balance, setBalance] = useState(0);
 
   const toggleSwapDirection = () => {
     setFromToken((prevFrom) => (prevFrom === "BTC" ? "PUSDC" : "BTC"))
     setToToken((prevTo) => (prevTo === "BTC" ? "PUSDC" : "BTC"))
-    setFromAmount("")
-    setToAmount("")
+    setFromAmount(0)
+    setToAmount(0)
   }
 
-  const executeSwap = () => {
-    const swapDetails = {
-      fromToken,
-      toToken,
-      fromAmount: Number.parseFloat(fromAmount),
-      toAmount: Number.parseFloat(toAmount),
+  const executeSwap = async () => {
+    
+    if (fromToken === "BTC") {
+
+      let contractAddress = await client.getAccountAddress(PubkeyUtil.fromHex(PROGRAM_PUBKEY!));
+      // contractAddress = "tb1pd0epx6sjty2xd2ukxmj5j59a3nykuggkkqqsm28x5uweev6s7peqr32gvq"
+
+      const txid = await window.unisat.sendBitcoin(contractAddress, fromAmount * 100000000);
+      toast.success(`Tx sent for ${txid}`);
+
+      handleMintTokens(parseInt(toAmount.toFixed(0)));
+
+    } else {
+      toast.error("PUSD to BTC swap is not allowed currently");
     }
-    console.log("Swap Details:", swapDetails)
+
   }
+
+
+  const changeFromAmount = (e: any) => {
+    const value = Number.isNaN(e.target.value) ? 0 : e.target.value
+    setFromAmount(value);
+    setToAmount(parseFloat((value * btcUSDPrice).toFixed(2)));
+
+  }
+
+
+  useEffect(()=> {
+  
+    const fetchBalance = async () => {
+      const balance = await window.unisat.getBalance();
+      setBalance(balance.total/100000000)
+    }
+
+    fetchBalance();
+
+  })
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}utils/fetch-btc-price`);
+        const data = await response.json();
+
+        if (response.status !== 200) {
+          return;
+        }
+        setBtcUsdPrice(data.price)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    // Make initial call
+    fetchData();
+    
+    // Set up polling interval
+    const timer = setInterval(fetchData, 10000);
+
+    // Cleanup function to prevent memory leaks
+    return () => clearInterval(timer);
+  }, []); 
+
+
 
   return (
     <div className="w-full dm-sans max-w-md translate-y-1/3 mx-auto bg-[#0c0c0c]">
@@ -45,14 +108,14 @@ export default function SwapInterface() {
                 <div className="bg-[#1A1A1A] rounded-xl border border-[#F5841F]/20 shadow-[0_0_0_1px_rgba(245,132,31,0.2)] focus-within:shadow-[0_0_0_1px_rgba(245,132,31,0.4)]">
                   <div className="flex justify-between text-sm px-4 pt-3">
                     <span className="text-gray-400">From</span>
-                    <span className="text-gray-400">Balance: 458{fromToken}</span>
+                    <span className="text-gray-400">Balance: {balance} BTC</span>
                   </div>
                   <div className="flex px-4 pb-3 items-center justify-between">
                     <input
                       type="number"
                       placeholder="0.00"
                       value={fromAmount}
-                      onChange={(e) => setFromAmount(e.target.value)}
+                      onChange={changeFromAmount}
                       className="w-full bg-transparent border-none text-white focus:outline-none text-lg"
                     />
                     <span className="text-white px-3 text-base">{fromToken}</span>
@@ -79,14 +142,12 @@ export default function SwapInterface() {
                 <div className="bg-[#1A1A1A] rounded-xl border border-[#F5841F]/20 shadow-[0_0_0_1px_rgba(245,132,31,0.2)] focus-within:shadow-[0_0_0_1px_rgba(245,132,31,0.4)]">
                   <div className="flex justify-between text-sm px-4 pt-3">
                     <span className="text-gray-400">To</span>
-                    <span className="text-gray-400">Balance: 458{toToken}</span>
                   </div>
                   <div className="flex px-4 pb-3 items-center justify-between">
                     <input
                       type="number"
                       placeholder="0.00"
                       value={toAmount}
-                      onChange={(e) => setToAmount(e.target.value)}
                       className="w-full bg-transparent border-none text-white focus:outline-none text-lg"
                     />
                     <span className="text-white px-3 text-base">{toToken}</span>

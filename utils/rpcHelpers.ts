@@ -307,7 +307,7 @@ export const handleSellOutcome = async (uniqueIdStr: string, amount: number, out
 
 
 
-export const handleRegisterAccount = async () => {
+export const handleMintTokens = async (amount: number) => {
 
   try {
 
@@ -326,7 +326,7 @@ export const handleRegisterAccount = async () => {
     const data2 = {
       function_number: 6,
       uid: uniqueId,
-      amount: BigInt(10000),
+      amount: BigInt(amount),
     };
 
     const serialized_data = borsh.serialize(schema, data2);
