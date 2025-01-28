@@ -263,8 +263,8 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-[#0c0c0c] text-white p-4 md:p-8 dm-sans">
       <div className="max-w-[90%] md:max-w-[70%] mx-auto">
-        <Link href="/discover" className="inline-flex w-full justify-center my-10 items-center text-2xl font-bold text-ow1 transition-colors">
-          <span className="hover:underline">[ Go Back ]</span>
+        <Link href="/discover" className="inline-flex w-full justify-center  items-center text-2xl font-bold text-ow1 transition-colors">
+          {/* <span className="hover:underline">[ Go Back ]</span> */}
         </Link>
 
         <Card className="bg-darkbg2 border-[1px] border-gray-800 p-6 md:p-8 rounded-xl">
