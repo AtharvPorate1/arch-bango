@@ -290,14 +290,14 @@ export default function TradeComponent({
                   <Button onClick={() => handlePricePreset(0)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
                     Reset
                   </Button>
-                  <Button onClick={() => handlePricePreset(2000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    2000 SATS
+                  <Button onClick={() => handlePricePreset(20)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    20 PUSD
                   </Button>
-                  <Button onClick={() => handlePricePreset(5000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    5000 SATS
+                  <Button onClick={() => handlePricePreset(500)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    500 PUSD
                   </Button>
-                  <Button onClick={() => handlePricePreset(10000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
-                    10000 SAT
+                  <Button onClick={() => handlePricePreset(1000)} size="sm" className="bg-darkbg text-ow1 px-2 text-xs">
+                    10000 PUSD
                   </Button>
                 </div>
               </div>
@@ -347,7 +347,9 @@ export default function TradeComponent({
             </div>
             <div className="flex justify-between text-sm">
               <span>Total</span>
-              <span>$ {isBuySelected ? (parseFloat(price) * (outcomePrices[0]?.btcPrice! / 100000000)).toFixed(2) : (calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)}</span>
+              {/* <span>$ {isBuySelected ? (parseFloat(price) * (outcomePrices[0]?.btcPrice! / 100000000)).toFixed(2) : (calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)}</span> */}
+              <span>$ {isBuySelected ? price : (calculateSharePrice(eventData?.outcomes.find(o => o.outcome_title === selectedOutcome)?.id || 0) * shares).toFixed(2)}</span>
+
             </div>
             {isBuySelected && (
               <div className="flex justify-between text-sm">
