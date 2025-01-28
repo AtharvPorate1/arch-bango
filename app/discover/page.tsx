@@ -1,15 +1,15 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { Input } from '@/components/ui/input'
+// import { Input } from '@/components/ui/input'
 import DiscoverCards from '@/components/_live/discovercards'
 import Footer from '@/components/_layout/Footer'
 import { toast } from 'sonner'
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { ChevronRight, Search } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import Image from 'next/image'
+// import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+// import { ChevronRight, Search } from 'lucide-react'
+// import { Button } from "@/components/ui/button"
+// import { Card } from "@/components/ui/card"
+// import Image from 'next/image'
 
 type CardData = {
   id: number
@@ -28,16 +28,16 @@ type CardData = {
   createdAt: Date
 }
 
-const navigationItems = [
-  { label: "Top", variant: "ghost" as const },
-  { label: "Crypto", variant: "outline" as const },
-  { label: "News", variant: "ghost" as const },
-  // { label: "IPL", variant: "ghost" as const },
-  // { label: "Top Test Cricketer", variant: "ghost" as const },
-  // { label: "WTC FINALS", variant: "ghost" as const },
-  // { label: "Chill Guy", variant: "ghost" as const },
-  // { label: "Friday Sale LIVE", variant: "ghost" as const },
-]
+// const navigationItems = [
+//   { label: "Top", variant: "ghost" as const },
+//   { label: "Crypto", variant: "outline" as const },
+//   { label: "News", variant: "ghost" as const },
+//   // { label: "IPL", variant: "ghost" as const },
+//   // { label: "Top Test Cricketer", variant: "ghost" as const },
+//   // { label: "WTC FINALS", variant: "ghost" as const },
+//   // { label: "Chill Guy", variant: "ghost" as const },
+//   // { label: "Friday Sale LIVE", variant: "ghost" as const },
+// ]
 
 export default function DiscoverSection() {
   const [sortBy, setSortBy] = useState('featured')
@@ -76,10 +76,10 @@ export default function DiscoverSection() {
 
   return (
     <div className="min-h-screen dm-sans bg-[#0c0c0c] text-white p-8">
-      <div className="max-w-md mx-auto md:space-y-8">
+      {/* <div className="max-w-md mx-auto md:space-y-8">
 
-      </div>
-      <div className="flex flex-col gap-8 -translate-y-10 md:translate-y-0 p-4 py-6 ">
+      </div> */}
+      <div className="flex flex-col gap-8  ">
 
       {/* <div className="relative max-w-3xl  mx-auto w-full">
         <Input

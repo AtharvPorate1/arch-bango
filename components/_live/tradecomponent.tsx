@@ -396,7 +396,7 @@ export default function TradeComponent({
   return (
     <>
       <TradeContent />
-      <Card className="bg-darkbg2 border-none text-ow1 mt-4">
+      {/* <Card className="bg-darkbg2 border-none text-ow1 mt-4">
         <CardHeader>
           <CardTitle className="text-ow1 text-lg -mb-1">Trade History</CardTitle>
         </CardHeader>
@@ -434,7 +434,7 @@ export default function TradeComponent({
             <p className="text-center text-gray-500">Connect your wallet to view your position</p>
           )}
         </CardContent>
-      </Card>
+      </Card> */}
     </>
   )
 }
