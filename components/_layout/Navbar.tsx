@@ -38,7 +38,7 @@ export default function Navbar() {
             <Image src="/mlogo.png" height={200} width={200} alt="Logo" />
           </Link>
 
-          <div className="hidden md:flex items-center text-lg font-medium gap-8">
+          {/* <div className="hidden md:flex items-center text-lg font-medium gap-8">
             <span
               className="text-ow1 hover:text-o1 hover:border-b-2 border-o1 transition-colors"
               onClick={() => handleCategoryClick("sports")}
@@ -69,7 +69,7 @@ export default function Navbar() {
             >
               Business
             </span>
-          </div>
+          </div> */}
 
           <div className="flex items-center gap-4">
             <Cash />
@@ -83,7 +83,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile menu */}
-        {isMenuOpen && (
+        {/* {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4">
             <span
               href="/sports"
@@ -121,7 +121,7 @@ export default function Navbar() {
               Business
             </span>
           </div>
-        )}
+        )} */}
       </nav>
 
       <style jsx global>{`
