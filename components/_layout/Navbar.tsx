@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from "react"
 // import span from "next/span"
+import { LuArrowUpDown } from "react-icons/lu";
 
-import { Menu, X } from "lucide-react"
+import {  Menu, X } from "lucide-react"
 import Image from "next/image"
 import ConnectButton from "./ConnectButton"
 import Cash from "./cash"
@@ -73,6 +74,13 @@ export default function Navbar() {
 
           <div className="flex items-center gap-4">
             <Cash />
+            <Link
+                    href="/swap"
+                    className="flex items-center gap-1 dm-sans text-[#EC762E] font-bold hover:text-[#FFA500] transition-colors"
+                  >
+                    <LuArrowUpDown className="font-extrabold" />
+                    Swap
+                  </Link>
             <span className="">
               <ConnectButton />
             </span>
