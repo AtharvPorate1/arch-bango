@@ -131,11 +131,11 @@ export default function TradeComponent({
     }
 
     try {
-      let totalAmountInvesting = 0
-      if (isBuySelected) {
-        const outcome = outcomePrices.find(outcomeInfo => outcomeInfo.title === selectedOutcome)
-        totalAmountInvesting = parseFloat(price) * (outcome?.btcPrice! / 100000000)
-      }
+      // let totalAmountInvesting = 0
+      // if (isBuySelected) {
+      //   const outcome = outcomePrices.find(outcomeInfo => outcomeInfo.title === selectedOutcome)
+      //   totalAmountInvesting = parseFloat(price) * outcome?.price!
+      // }
 
       // const publicKeyResp: string = await window.unisat.getPublicKey();
       // const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
@@ -162,14 +162,12 @@ export default function TradeComponent({
         }
       }
 
-      return;
-
       const endpoint = isBuySelected ? `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/buy` : `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/sell`
       const body = isBuySelected
         ? {
           eventId: eventData.id,
           outcomeId: selectedOutcomeData.id,
-          usdtAmount: totalAmountInvesting
+          usdtAmount: price
         }
         : {
           eventId: eventData.id,

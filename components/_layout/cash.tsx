@@ -4,11 +4,11 @@ import Link from "next/link"
 import { fetchTokenData } from "@/utils/rpcHelpers";
 import { PubkeyUtil } from "@saturnbtcio/arch-sdk";
 import { useEffect, useState } from "react"
+import { usePortfolioState } from "@/store/profileStore";
 
 const Cash = () => {
-  const [wallets, setWallets] = useState<any[]>([]);
-  const [balance, setBalance] = useState<number>(0);
-  
+  const portfolioStore = usePortfolioState((state)=> state);
+
   const getMyBalance = async () => {
     
     const publicKeyResp: string = await window.unisat.getPublicKey();
@@ -19,7 +19,7 @@ const Cash = () => {
 
     balances.forEach((value, key) => {
       if (key.toString() === pubKeyBytes.toString()) {
-        setBalance(Number(value));
+        portfolioStore.setPusdBalance(Number(value));
       }
     });
     
@@ -41,7 +41,7 @@ const Cash = () => {
     <Link href="/profile">
     <div className="flex flex-col dm-sans hover:bg-[#191B2A] p-2 rounded-sm cursor-pointer duration-300 items-center">
       <div className="text-[#EC762E] text-md font-medium">
-        ${balance.toFixed(2)}
+        ${portfolioStore.pusdBalance.toFixed(2)}
       </div>
       <div className="text-gray-400 text-xs mt-1">Portfolio</div>
     </div>

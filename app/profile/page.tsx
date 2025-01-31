@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useWallet } from "@/hooks/useWallet"
 import EditProfileModal from "@/components/_layout/EditProfileModal"
+import { usePortfolioState } from "@/store/profileStore"
 
 interface UserData {
   id?: number
@@ -167,6 +168,8 @@ export default function Component() {
   const [events, setEvents] = useState<Event[]>([])
   const [eventStatus, setEventStatus] = useState<string>("ACTIVE")
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false)
+  const portfolioStore = usePortfolioState((state)=> state);
+  
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -324,7 +327,7 @@ export default function Component() {
                 <div className="flex flex-col gap-2">
                   <span className="text-gray-400 text-sm">Portfolio</span>
                   <div className="flex flex-col">
-                    <span className="text-white text-2xl font-semibold">$58.24</span>
+                    <span className="text-white text-2xl font-semibold">${portfolioStore.pusdBalance}</span>
                     <span className="text-[#22c55e] text-sm">
                       $10.04 (10%) <span className="text-gray-400">Today</span>
                     </span>
