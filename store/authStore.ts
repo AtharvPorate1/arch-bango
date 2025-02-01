@@ -2,9 +2,10 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface AuthState {
+  userId: number | undefined,
   isAuthenticated: boolean
   username: string
-  setAuth: (isAuthenticated: boolean, username: string) => void
+  setAuth: (isAuthenticated: boolean, username: string, userId: number) => void
   logout: () => void
 }
 
@@ -17,9 +18,10 @@ export interface WalletState {
 }
 
 export const useAuthStore = create<AuthState>((set: any) => ({
+  userId: undefined,
   isAuthenticated: false,
   username: '',
-  setAuth: (isAuthenticated: boolean, username: string) => set({ isAuthenticated, username }),
+  setAuth: (isAuthenticated: boolean, username: string, userId: number) => set({ isAuthenticated, username, userId }),
   logout: () => set({ isAuthenticated: false, username: '' }),
 }))
 

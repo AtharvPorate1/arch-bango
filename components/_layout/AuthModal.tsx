@@ -8,7 +8,7 @@ import { Pencil } from "lucide-react"
 import { AddressPurpose, MessageSigningProtocols, request, RpcErrorCode } from "sats-connect"
 import { toast } from "sonner"
 import EditProfileModal from "./EditProfileModal"
-import { walletStore } from "@/store/authStore"
+import { useAuthStore, walletStore } from "@/store/authStore"
 // import Wallet from "sats-connect";
 // import FaucetButton from '../Faucet'
 import { Steps } from "intro.js-react"
@@ -36,6 +36,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
   const [username, setUsername] = useState(initialUsername)
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
   const [userData, setUserData] = useState<UserData | null >(null)
+  const authstore = useAuthStore((state)=>state);
 
   // Get store values and actions
   const { setWalletData, isConnected, address, publicKey } = walletStore()
@@ -213,6 +214,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
       if (data && data.length > 0) {
         setUserData(data[0])
         console.log("Fetched user data:", data[0])
+        authstore.setAuth(true,data[0].username, data[0].id);
+
       } else {
         console.log("No user data found")
       }
