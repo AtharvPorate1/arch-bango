@@ -74,7 +74,7 @@ export const PredictionCard: React.FC<CardData> = ({
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex flex-col gap-2 flex-1">
                     <h2 className="text-lg font-semibold text-white">{question}</h2>
-                    <div className="flex flex-wrap gap-1">
+                    {/* <div className="flex flex-wrap gap-1">
                       {community.map((tag, index) => (
                         <Badge
                           key={index}
@@ -84,7 +84,7 @@ export const PredictionCard: React.FC<CardData> = ({
                           {tag}
                         </Badge>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                   <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
                     <img src={image || "/placeholder.svg"} alt="" className="w-full h-full object-cover" />
