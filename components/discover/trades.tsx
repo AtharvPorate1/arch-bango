@@ -49,6 +49,10 @@ export default function TradingActivity({ eventID }: { eventID: string }) {
 
   useEffect(() => {
     fetchTrades();
+
+    const interval = setInterval(fetchTrades, 5000);
+
+    return () => clearInterval(interval);
   }, [])
 
   return (
