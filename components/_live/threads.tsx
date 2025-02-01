@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import {  X } from "lucide-react"
+import { X } from "lucide-react"
 import Image from "next/image"
 import { toast } from "@/hooks/use-toast"
 import HolderDistribution from "../discover/holders"
@@ -35,7 +35,7 @@ const userBgColors = [
   'bg-[#86EDAA]',
   'bg-[#E0A3A1]',
   'bg-[#FAF1F4]',
-  
+
 ]
 
 const getAccessToken = () => {
@@ -45,11 +45,11 @@ const getAccessToken = () => {
   return null
 }
 
-export default function Component({ 
+export default function Component({
   isLoading = false,
   id = "1",
-  scrollToTop = () => {},
-  scrollToBottom = () => {}
+  scrollToTop = () => { },
+  scrollToBottom = () => { }
 }: {
   isLoading?: boolean
   scrollAreaRef?: React.RefObject<HTMLDivElement>
@@ -125,7 +125,7 @@ export default function Component({
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       let imageUrl = ""
       if (selectedImage) {
@@ -166,7 +166,7 @@ export default function Component({
       }
 
       await fetchThreads()
-      
+
       setNewComment("")
       setSelectedImage(null)
       setReplyingTo(null)
@@ -197,7 +197,7 @@ export default function Component({
     const [isExpanded, setIsExpanded] = React.useState(false)
     const colorIndex = React.useMemo(() => id % userBgColors.length, [id])
     const userBgColor = userBgColors[colorIndex]
-    
+
     if (!user || !user.username) {
       return null
     }
@@ -206,12 +206,12 @@ export default function Component({
       <div className="mb-2 px-1  bg-darkbg2">
         <div className="flex items-center gap-2 ">
           <span>
-            <Image src={user.profile_pic} alt="chill guy"  width={20} height={20} className="rounded-sm"/>
+            <Image src={user.profile_pic} alt="chill guy" width={20} height={20} className="rounded-sm" />
           </span>
           <span className={`font-bold text-xs text-[#151419]  px-[0.1rem] rounded ${userBgColor}`}>{user.username}</span>
           <span className="text-gray-400 text-xs">{new Date(createdAt).toLocaleTimeString()}</span>
-          <button 
-            onClick={onReply} 
+          <button
+            onClick={onReply}
             className="text-sm text-gray-400 hover:text-ow1"
           >
             [reply]
@@ -258,124 +258,123 @@ export default function Component({
 
   return (
     <Card className="bg-transparent md:-translate-y-4 w-full rounded-none shadow-none border-none text-ow1">
-    <CardContent className="p-0">
-      <Tabs defaultValue="thread" className="w-full">
-        <TabsList className="bg-transparent shadow-none gap-3 w-full justify-start flex py-4">
-        <TabsTrigger 
-          value="thread" 
-          className="data-[state=active]:text-ow1 data-[state=active]:underline data-[state=active]:shadow-none data-[state=active]:underline-offset-8 data-[state=active]:decoration-o1 data-[state=active]:decoration-2 data-[state=active]:bg-transparent data-[state=inactive]:text-[#8F8F8F] data-[state=inactive]:bg-transparent"
-        >
-          Thread
-        </TabsTrigger>
-        <TabsTrigger 
-          value="trades" 
-          className="data-[state=active]:text-ow1 data-[state=active]:underline data-[state=active]:shadow-none data-[state=active]:underline-offset-8 data-[state=active]:decoration-o1 data-[state=active]:decoration-2 data-[state=active]:bg-transparent data-[state=inactive]:text-[#8F8F8F] data-[state=inactive]:bg-transparent"
-        >
-          Trades
-        </TabsTrigger>
-        <TabsTrigger 
-          value="holders" 
-          className="data-[state=active]:text-ow1 data-[state=active]:underline data-[state=active]:shadow-none data-[state=active]:underline-offset-8 data-[state=active]:decoration-o1 data-[state=active]:decoration-2 data-[state=active]:bg-transparent data-[state=inactive]:text-[#8F8F8F] data-[state=inactive]:bg-transparent"
-        >
-          Holders
-        </TabsTrigger>
-        <div className="p-0 hidden md:flex md:w-full md:justify-end ">
+      <CardContent className="p-0">
+        <Tabs defaultValue="thread" className="w-full">
+          <TabsList className="bg-transparent shadow-none gap-3 w-full justify-start flex py-4">
+            <TabsTrigger
+              value="thread"
+              className="data-[state=active]:text-ow1 data-[state=active]:underline data-[state=active]:shadow-none data-[state=active]:underline-offset-8 data-[state=active]:decoration-o1 data-[state=active]:decoration-2 data-[state=active]:bg-transparent data-[state=inactive]:text-[#8F8F8F] data-[state=inactive]:bg-transparent"
+            >
+              Thread
+            </TabsTrigger>
+            <TabsTrigger
+              value="trades"
+              className="data-[state=active]:text-ow1 data-[state=active]:underline data-[state=active]:shadow-none data-[state=active]:underline-offset-8 data-[state=active]:decoration-o1 data-[state=active]:decoration-2 data-[state=active]:bg-transparent data-[state=inactive]:text-[#8F8F8F] data-[state=inactive]:bg-transparent"
+            >
+              Trades
+            </TabsTrigger>
+            <TabsTrigger
+              value="holders"
+              className="data-[state=active]:text-ow1 data-[state=active]:underline data-[state=active]:shadow-none data-[state=active]:underline-offset-8 data-[state=active]:decoration-o1 data-[state=active]:decoration-2 data-[state=active]:bg-transparent data-[state=inactive]:text-[#8F8F8F] data-[state=inactive]:bg-transparent"
+            >
+              Holders
+            </TabsTrigger>
+            <div className="p-0 hidden md:flex md:w-full md:justify-end ">
               <Button variant="link" className="text-ow1" onClick={scrollToBottom}>
                 [ Scroll To Bottom ]
               </Button>
             </div>
-        </TabsList>
-        
-        <TabsContent value="thread" className="mt-0 w-full">
-          <div className="space-y-1 w-full">
-            <div className="p-0 md:hidden md:w-full md:justify-end ">
-              <Button variant="link" className="text-ow1" onClick={scrollToBottom}>
-                [ Scroll To Bottom ]
-              </Button>
-            </div>
-            
-            {isLoading || isSubmitting ? (
-              <>
-                <Skeleton className="h-24 w-full mb-2" />
-                <Skeleton className="h-24 w-full mb-2" />
-                <Skeleton className="h-24 w-full mb-2" />
-              </>
-            ) : threads && threads.length > 0 ? (
-              threads.map((thread) => (
-                <ThreadItem key={thread.id} {...thread} onReply={() => handleReply(thread.id)} />
-              ))
-            ) : (
-              <p className="text-ow1 p-4"></p>
-            )}
-            
-            <div className="flex w-1/2 justify-between p-0">
-              <Button variant="link" className="text-ow1" onClick={scrollToTop}>
-                [ Scroll To Top ]
-              </Button>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="link" className="bg-transparent hover:bg-transparent hover:text-ow1/90 text-ow1">[ Post Reply ]</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] bg-darkbg2 text-ow1">
-                  <DialogHeader>
-                    <DialogTitle>{replyingTo ? `Reply to thread #${replyingTo}` : 'Add a comment'}</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleCommentSubmit} className="space-y-4">
-                    <Textarea
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="Type your comment here..."
-                      className="min-h-[100px] bg-darkbg border-gray-600"
-                    />
-                    <div>
-                      <p className="mb-2">Image (optional)</p>
-                      <div className="border-2 border-dashed border-gray-600 rounded-md p-4 text-center">
-                        {selectedImage ? (
-                          <p>{selectedImage.name}</p>
-                        ) : (
-                          <p>Drag and Drop an image here</p>
-                        )}
-                      </div>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="mt-2"
+          </TabsList>
+
+          <TabsContent value="thread" className="mt-0 w-full">
+            <div className="space-y-1 w-full">
+              <div className="p-0 md:hidden md:w-full md:justify-end ">
+                <Button variant="link" className="text-ow1" onClick={scrollToBottom}>
+                  [ Scroll To Bottom ]
+                </Button>
+              </div>
+
+              {isLoading || isSubmitting ? (
+                <>
+                  <Skeleton className="h-24 w-full mb-2" />
+                  <Skeleton className="h-24 w-full mb-2" />
+                  <Skeleton className="h-24 w-full mb-2" />
+                </>
+              ) : threads && threads.length > 0 ? (
+                threads.map((thread) => (
+                  <ThreadItem key={thread.id} {...thread} onReply={() => handleReply(thread.id)} />
+                ))
+              ) : (
+                <p className="text-ow1 p-4"></p>
+              )}
+
+              <div className="flex w-1/2 justify-between p-0">
+                <Button variant="link" className="text-ow1" onClick={scrollToTop}>
+                  [ Scroll To Top ]
+                </Button>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="link" className="bg-transparent hover:bg-transparent hover:text-ow1/90 text-ow1">[ Post Reply ]</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] bg-darkbg2 text-ow1">
+                    <DialogHeader>
+                      <DialogTitle>{replyingTo ? `Reply to thread #${replyingTo}` : 'Add a comment'}</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleCommentSubmit} className="space-y-4">
+                      <Textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="Type your comment here..."
+                        className="min-h-[100px] bg-darkbg border-gray-600"
                       />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Button 
-                        type="submit" 
-                        className="bg-o1 hover:bg-o1/90"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? 'Posting...' : 'Post Reply'}
-                      </Button>
-                      <Button 
-                        type="button"
-                        variant="ghost" 
-                        className="bg-transparent shadow-none hover:bg-transparent text-ow1 hover:text-ow1/90" 
-                        onClick={handleCancel}
-                        disabled={isSubmitting}
-                      >
-                        [ Cancel ]
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+                      <div>
+                        <p className="mb-2">Image (optional)</p>
+                        <div className="border-2 border-dashed border-gray-600 rounded-md p-4 text-center">
+                          {selectedImage ? (
+                            <p>{selectedImage.name}</p>
+                          ) : (
+                            <p>Drag and Drop an image here</p>
+                          )}
+                        </div>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="mt-2"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          type="submit"
+                          className="bg-o1 hover:bg-o1/90"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? 'Posting...' : 'Post Reply'}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="bg-transparent shadow-none hover:bg-transparent text-ow1 hover:text-ow1/90"
+                          onClick={handleCancel}
+                          disabled={isSubmitting}
+                        >
+                          [ Cancel ]
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
-          </div>
-        </TabsContent>
-        <TabsContent value="trades">
-                        <TradingActivity/>
-          
-        </TabsContent>
-        <TabsContent value="holders">
-          <HolderDistribution/>
-        </TabsContent>
-      </Tabs>
-    </CardContent>
-  </Card>
+          </TabsContent>
+          <TabsContent value="trades">
+            <TradingActivity eventID={id} />
+          </TabsContent>
+          <TabsContent value="holders">
+            <HolderDistribution />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   )
 }
