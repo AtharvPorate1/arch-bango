@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ExternalLink, Users, MessageSquare, PenSquare, Search, MoreVertical } from "lucide-react"
+import { Users, MessageSquare, PenSquare, Search, MoreVertical } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useWallet } from "@/hooks/useWallet"
 import EditProfileModal from "@/components/_layout/EditProfileModal"
 import { usePortfolioState } from "@/store/profileStore"
+import { TransactionHistory } from "@/components/_live/transaction-history"
 
 interface UserData {
   id?: number
@@ -168,8 +169,7 @@ export default function Component() {
   const [events, setEvents] = useState<Event[]>([])
   const [eventStatus, setEventStatus] = useState<string>("ACTIVE")
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false)
-  const portfolioStore = usePortfolioState((state)=> state);
-  
+  const portfolioStore = usePortfolioState((state) => state)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -400,8 +400,8 @@ export default function Component() {
                     </SelectTrigger>
                     <SelectContent className="bg-[#1c1f2e] border-gray-700 ">
                       <SelectItem value="all">All</SelectItem>
-                      <SelectItem value="deposits">Deposits</SelectItem>
-                      <SelectItem value="withdrawals">Withdrawals</SelectItem>
+                      <SelectItem value="buy">Buy</SelectItem>
+                      <SelectItem value="sell">Sell</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select defaultValue="newest">
@@ -418,17 +418,8 @@ export default function Component() {
                   </Button>
                 </div>
 
-                {/* Empty State */}
-                <div className="bg-[#1c1f2e]/50 rounded-lg min-h-[400px] flex flex-col items-center justify-center p-6">
-                  <div className="w-16 h-16 mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-                    <Search className="w-8 h-8 text-gray-500" />
-                  </div>
-                  <h3 className="text-gray-300 text-lg font-medium mb-2">No transactions found</h3>
-                  <p className="text-gray-500 text-center max-w-md">
-                    There are no transactions to display at the moment. New transactions will appear here when they
-                    occur.
-                  </p>
-                </div>
+                {/* Transaction History */}
+                <TransactionHistory />
               </div>
             </TabsContent>
 
