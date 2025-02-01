@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea"
 import {  X } from "lucide-react"
 import Image from "next/image"
 import { toast } from "@/hooks/use-toast"
+import HolderDistribution from "../discover/holders"
+import TradingActivity from "../discover/trades"
 
 
 type Thread = {
@@ -365,8 +367,13 @@ export default function Component({
             </div>
           </div>
         </TabsContent>
-        <TabsContent value="trades"></TabsContent>
-        <TabsContent value="holders"></TabsContent>
+        <TabsContent value="trades">
+                        <TradingActivity/>
+          
+        </TabsContent>
+        <TabsContent value="holders">
+          <HolderDistribution/>
+        </TabsContent>
       </Tabs>
     </CardContent>
   </Card>
