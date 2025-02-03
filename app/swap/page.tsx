@@ -31,11 +31,11 @@ export default function SwapInterface() {
       let contractAddress = await client.getAccountAddress(PubkeyUtil.fromHex(PROGRAM_PUBKEY!));
       // contractAddress = "tb1pd0epx6sjty2xd2ukxmj5j59a3nykuggkkqqsm28x5uweev6s7peqr32gvq"
 
-      const txid = await window.unisat.sendBitcoin(contractAddress, fromAmount * 100000000);
-      toast.success(`Tx sent for ${txid}`);
+      // const txid = await window.unisat.sendBitcoin(contractAddress, fromAmount * 100000000);
+      // toast.success(`Tx sent for ${txid}`);
 
       try{
-        handleMintTokens(parseInt(toAmount.toFixed(0)));
+        await handleMintTokens(parseInt(toAmount.toFixed(0)));
         toast.success(`Tokens successfully added!`);
       } catch {
         toast.error(`Couldn't add tokens to your account`);
