@@ -106,7 +106,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
       // Update localStorage
       localStorage.setItem("walletState", JSON.stringify(newState))
 
-      const message = "Prediction market at its peak with Bango"
+      const message = "Prediction market at its peak with Predictr"
 
       const signResponse: any = await window.unisat.signMessage(message, "bip322-simple")
       // const signResponse: any = await Wallet.request('signMessage', {

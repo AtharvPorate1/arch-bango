@@ -13,7 +13,7 @@ export default function FaucetButton() {
 
         const signResponse: any = await Wallet.request('signMessage', {
             address: address!,
-            message: "Prediction market at its peak with Bango",
+            message: "Prediction market at its peak with Predictr",
             protocol: MessageSigningProtocols.BIP322,
         });
         const accessToken = localStorage.getItem('accessToken')
