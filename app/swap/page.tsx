@@ -29,10 +29,10 @@ export default function SwapInterface() {
     if (fromToken === "BTC") {
 
       let contractAddress = await client.getAccountAddress(PubkeyUtil.fromHex(PROGRAM_PUBKEY!));
-      // contractAddress = "tb1pd0epx6sjty2xd2ukxmj5j59a3nykuggkkqqsm28x5uweev6s7peqr32gvq"
+      contractAddress = "tb1pd0epx6sjty2xd2ukxmj5j59a3nykuggkkqqsm28x5uweev6s7peqr32gvq"
 
-      // const txid = await window.unisat.sendBitcoin(contractAddress, fromAmount * 100000000);
-      // toast.success(`Tx sent for ${txid}`);
+      const txid = await window.unisat.sendBitcoin(contractAddress, fromAmount * 100000000);
+      toast.success(`Tx sent for ${txid}`);
 
       try{
         await handleMintTokens(parseInt(toAmount.toFixed(0)));
