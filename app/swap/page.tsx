@@ -34,7 +34,13 @@ export default function SwapInterface() {
       const txid = await window.unisat.sendBitcoin(contractAddress, fromAmount * 100000000);
       toast.success(`Tx sent for ${txid}`);
 
-      handleMintTokens(parseInt(toAmount.toFixed(0)));
+      try{
+        handleMintTokens(parseInt(toAmount.toFixed(0)));
+        toast.success(`Tokens successfully added!`);
+      } catch {
+        toast.error(`Couldn't add tokens to your account`);
+      }
+
 
     } else {
       toast.error("PUSD to BTC swap is not allowed currently");
