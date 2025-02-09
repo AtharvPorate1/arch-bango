@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import DiscoverCards from '@/components/_live/discovercards'
 import Footer from '@/components/_layout/Footer'
 import { toast } from 'sonner'
+import FAQ from '@/components/_layout/faqs'
 // import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 // import { ChevronRight, Search } from 'lucide-react'
 // import { Button } from "@/components/ui/button"
@@ -182,6 +183,9 @@ export default function DiscoverSection() {
     </div>
       <div className='md:translate-y-0 -translate-y-14'>
         <DiscoverCards/>
+      </div>
+      <div id='faq'>
+      <FAQ/>
       </div>
 
       <Footer/>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import AuthModal from './AuthModal'
+import Image from 'next/image'
 // import { useAtom } from 'jotai'
 
 function ConnectButton(): JSX.Element {
@@ -42,14 +43,26 @@ function ConnectButton(): JSX.Element {
     <div>
 <div
   onClick={handleAppkit}
-  className="flex hover:cursor-pointer text-xs sm:text-lg self-center dm-sans md:font-bold text-black md:py-2 md:px-4 font-medium py-1 px-2 rounded-sm md:rounded-md bg-o1"
+  className="flex gap-2 hover:cursor-pointer text-xs sm:text-lg self-center dm-sans md:font-bold text-black md:py-2 md:px-4 font-medium py-1 px-2 rounded-sm md:rounded-md "
   style={{
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   }}
 >
+  <div className='text-ow1 flex self-center'>
   [ {username} ]
+  </div>
+  <div>
+     <Image
+      src="/logos/Group 184.png"
+      alt='user'
+      height={800}
+      width={800}
+      className='w-8 h-8'
+
+      /> 
+  </div>
 </div>
 
       <AuthModal

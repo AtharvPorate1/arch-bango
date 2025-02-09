@@ -242,7 +242,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-600 rounded-sm flex-shrink-0">
                     <Image
                     alt={`${userData?.profile_pic} ` || "profile_pic"}
-                    src={userData ? `${userData.profile_pic}` : ""}
+                    src={userData?.profile_pic ? userData.profile_pic : "/chillguy.jpg"}
                     width={400}
                     height={400}
                     />

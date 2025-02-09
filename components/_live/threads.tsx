@@ -206,7 +206,7 @@ export default function Component({
       <div className="mb-2 px-1  bg-darkbg2">
         <div className="flex items-center gap-2 ">
           <span>
-            <Image src={user.profile_pic} alt="chill guy" width={20} height={20} className="rounded-sm" />
+            <Image src={user.profile_pic || "/chillguy.jpg"} alt="chill guy" width={20} height={20} className="rounded-sm" />
           </span>
           <span className={`font-bold text-xs text-[#151419]  px-[0.1rem] rounded ${userBgColor}`}>{user.username}</span>
           <span className="text-gray-400 text-xs">{new Date(createdAt).toLocaleTimeString()}</span>
