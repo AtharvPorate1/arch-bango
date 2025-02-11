@@ -6,6 +6,7 @@ import DiscoverCards from '@/components/_live/discovercards'
 import Footer from '@/components/_layout/Footer'
 import { toast } from 'sonner'
 import FAQ from '@/components/_layout/faqs'
+import HeroSection from '@/components/_live/hero'
 // import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 // import { ChevronRight, Search } from 'lucide-react'
 // import { Button } from "@/components/ui/button"
@@ -81,6 +82,10 @@ export default function DiscoverSection() {
 
       </div> */}
       <div className="flex flex-col gap-8  ">
+        <></>
+        <div className=''>
+        <HeroSection/>
+        </div>
 
       {/* <div className="relative max-w-3xl  mx-auto w-full">
         <Input
