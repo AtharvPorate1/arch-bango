@@ -26,17 +26,17 @@ const Cash = () => {
 
   }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    const intervalId = setInterval(() => {
-      getMyBalance()
-    }, 10000)
+  //   const intervalId = setInterval(() => {
+  //     getMyBalance()
+  //   }, 10000)
 
-    getMyBalance()
+  //   getMyBalance()
 
-    return () => clearInterval(intervalId)
-  }, [])
-
+  //   return () => clearInterval(intervalId)
+  // }, [])
+ 
   return (
     <Link href="/profile">
     <div className="flex flex-col dm-sans w-20 hover:bg-[#191B2A] p-2 rounded-sm cursor-pointer duration-300 items-center">

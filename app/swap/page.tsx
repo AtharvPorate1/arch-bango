@@ -35,8 +35,12 @@ export default function SwapInterface() {
       toast.success(`Tx sent for ${txid}`);
 
       try{
-        await handleMintTokens(parseInt(toAmount.toFixed(0)));
-        toast.success(`Tokens successfully added!`);
+        const result = await handleMintTokens(txid);
+        if (result) {
+          toast.success(`Tokens successfully added!`);
+        } else {
+          toast.error(`Invalid Tx or Something went wrong!`);
+        }
       } catch {
         toast.error(`Couldn't add tokens to your account`);
       }

@@ -307,67 +307,82 @@ export const handleSellOutcome = async (uniqueIdStr: string, amount: number, out
 
 
 
-export const handleMintTokens = async (amount: number) => {
+// export const handleMintTokens = async (amount: number) => {
+
+//   try {
+
+//     const uniqueId = new Uint8Array(32).fill(0); // Fill with your ID bytes
+//     const uniqueIdBytes = new TextEncoder().encode(uuidv4().replaceAll("-", ""));
+//     uniqueId.set(uniqueIdBytes.slice(0, 32));
+
+//     const schema = {
+//       struct: {
+//         function_number: 'u8',
+//         uid: { array: { type: 'u8', len: 32 } },
+//         amount: 'u64',
+//       }
+//     };
+
+//     const data2 = {
+//       function_number: 6,
+//       uid: uniqueId,
+//       amount: BigInt(amount),
+//     };
+
+//     const serialized_data = borsh.serialize(schema, data2);
+
+//     const publicKeyResp: string = await window.unisat.getPublicKey();
+//     const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
+
+//     const instruction: Instruction = {
+//       program_id: PubkeyUtil.fromHex(process.env.NEXT_PUBLIC_PROGRAM_PUBKEY!),
+//       accounts: [
+//         {
+//           pubkey: PubkeyUtil.fromHex(process.env.NEXT_PUBLIC_TOKEN_ACCOUNT_PUBKEY!),
+//           is_signer: false,
+//           is_writable: true,
+//         },
+//         {
+//           pubkey: PubkeyUtil.fromHex(publicKey),
+//           is_signer: true,
+//           is_writable: false
+//         }
+//       ],
+//       data: serialized_data,
+//     };
+
+//     const messageObj: Message = {
+//       signers: [PubkeyUtil.fromHex(publicKey)],
+//       instructions: [instruction],
+//     };
+
+//     const messageHash = MessageUtil.hash(messageObj);
+//     const signature: any = await window.unisat.signMessage(Buffer.from(messageHash).toString('hex'), "bip322-simple")
+//     const signatureBytes = new Uint8Array(Buffer.from(signature, 'base64')).slice(2);
+
+//     const result = await client.sendTransaction({
+//       version: 0,
+//       signatures: [signatureBytes],
+//       message: messageObj,
+//     });
+
+//     console.log(result, "++++++++");
+//     return true;
+
+//   } catch (error) {
+//     console.error('Error creating event:', error);
+//     return false;
+//   }
+// };
+
+
+
+export const handleMintTokens = async (txid: string) => {
 
   try {
 
-    const uniqueId = new Uint8Array(32).fill(0); // Fill with your ID bytes
-    const uniqueIdBytes = new TextEncoder().encode(uuidv4().replaceAll("-", ""));
-    uniqueId.set(uniqueIdBytes.slice(0, 32));
-
-    const schema = {
-      struct: {
-        function_number: 'u8',
-        uid: { array: { type: 'u8', len: 32 } },
-        amount: 'u64',
-      }
-    };
-
-    const data2 = {
-      function_number: 6,
-      uid: uniqueId,
-      amount: BigInt(amount),
-    };
-
-    const serialized_data = borsh.serialize(schema, data2);
-
-    const publicKeyResp: string = await window.unisat.getPublicKey();
-    const publicKey = publicKeyResp.slice(2, publicKeyResp.length)
-
-    const instruction: Instruction = {
-      program_id: PubkeyUtil.fromHex(process.env.NEXT_PUBLIC_PROGRAM_PUBKEY!),
-      accounts: [
-        {
-          pubkey: PubkeyUtil.fromHex(process.env.NEXT_PUBLIC_TOKEN_ACCOUNT_PUBKEY!),
-          is_signer: false,
-          is_writable: true,
-        },
-        {
-          pubkey: PubkeyUtil.fromHex(publicKey),
-          is_signer: true,
-          is_writable: false
-        }
-      ],
-      data: serialized_data,
-    };
-
-    const messageObj: Message = {
-      signers: [PubkeyUtil.fromHex(publicKey)],
-      instructions: [instruction],
-    };
-
-    const messageHash = MessageUtil.hash(messageObj);
-    const signature: any = await window.unisat.signMessage(Buffer.from(messageHash).toString('hex'), "bip322-simple")
-    const signatureBytes = new Uint8Array(Buffer.from(signature, 'base64')).slice(2);
-
-    const result = await client.sendTransaction({
-      version: 0,
-      signatures: [signatureBytes],
-      message: messageObj,
-    });
-
-    console.log(result, "++++++++");
-    return true;
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}token-allocations/buyPusd/${txid}`)  
+    return response.status === 200 ? true : false
 
   } catch (error) {
     console.error('Error creating event:', error);

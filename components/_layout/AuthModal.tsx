@@ -14,6 +14,7 @@ import { useAuthStore, walletStore } from "@/store/authStore"
 import { Steps } from "intro.js-react"
 import "intro.js/introjs.css"
 import Image from "next/image"
+import { usePortfolioState } from "@/store/profileStore"
 
 interface AuthModalProps {
   isOpen: boolean
@@ -22,8 +23,8 @@ interface AuthModalProps {
 }
 
 interface UserData {
-  profile_pic : string 
-  username : string
+  profile_pic: string
+  username: string
 }
 
 // Utility function
@@ -35,8 +36,9 @@ const formatAddress = (address: string) => {
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername = "KryptoNight" }) => {
   const [username, setUsername] = useState(initialUsername)
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
-  const [userData, setUserData] = useState<UserData | null >(null)
-  const authstore = useAuthStore((state)=>state);
+  const [userData, setUserData] = useState<UserData | null>(null)
+  const authstore = useAuthStore((state) => state);
+  const profileStore = usePortfolioState((state) => state);
 
   // Get store values and actions
   const { setWalletData, isConnected, address, publicKey } = walletStore()
@@ -189,7 +191,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
     onClose()
   }, [])
 
-  const fetchUserData = async (walletAddress) => {
+  const fetchUserData = async (walletAddress: string) => {
     const accessToken = localStorage.getItem("accessToken")
     if (!accessToken) {
       console.error("No access token found")
@@ -214,8 +216,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
       if (data && data.length > 0) {
         setUserData(data[0])
         console.log("Fetched user data:", data[0])
-        authstore.setAuth(true,data[0].username, data[0].id);
-
+        authstore.setAuth(true, data[0].username, data[0].id);
+        profileStore.setPusdBalance(data[0].playmoney);
       } else {
         console.log("No user data found")
       }
@@ -224,11 +226,37 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
     }
   }
 
+  const getMyBalance = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}token-allocations/balance/${address}`)
+      if (response.status !== 200 ){
+        profileStore.setPusdBalance(0);
+      } else {
+        const jsn = await response.json()
+        profileStore.setPusdBalance(jsn.playmoney)
+      }
+    } catch {
+      profileStore.setPusdBalance(0);
+    }
+
+  }
+
   useEffect(() => {
     if (isConnected && address) {
       fetchUserData(address)
     }
   }, [isConnected, address])
+
+  useEffect(() => {
+
+    const intervalId = setInterval(() => {
+      getMyBalance()
+    }, 10000)
+
+    getMyBalance()
+
+    return () => clearInterval(intervalId)
+  }, [])
 
   return (
     <>
@@ -241,10 +269,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
                 <div className="flex items-center gap-3 w-full max-w-[300px]">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-600 rounded-sm flex-shrink-0">
                     <Image
-                    alt={`${userData?.profile_pic} ` || "profile_pic"}
-                    src={userData?.profile_pic ? userData.profile_pic : "/chillguy.jpg"}
-                    width={400}
-                    height={400}
+                      alt={`${userData?.profile_pic} ` || "profile_pic"}
+                      src={userData?.profile_pic ? userData.profile_pic : "/chillguy.jpg"}
+                      width={400}
+                      height={400}
                     />
                   </div>
                   <div className="flex flex-col overflow-hidden">
