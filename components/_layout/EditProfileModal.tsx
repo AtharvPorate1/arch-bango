@@ -229,7 +229,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               className="bg-[#151621] border-none text-white min-h-[120px] resize-none w-2/3"
-              placeholder="Tell us about yourself"
+              placeholder="User Bio : Tell us more about you"
             />
           </div>
 
