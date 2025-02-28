@@ -183,6 +183,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialUsername 
 
   const handleDisconnect = useCallback(async () => {
     await disconnectWallet()
+    profileStore.setPusdBalance(0);
     toast.success("Wallet Disconnected")
   }, [])
 

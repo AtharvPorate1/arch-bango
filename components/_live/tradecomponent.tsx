@@ -117,13 +117,13 @@ export default function TradeComponent({
       toast.error("Please connect your wallet to place an order")
       return
     }
-    
+
     if (!selectedOutcome) {
       console.error("Cannot place order: Outcome not selected")
       toast.error("Please select an outcome before placing an order")
       return
     }
-    
+
     if (!eventData) {
       console.error("Cannot place order: Event data missing")
       toast.error("Event data is missing. Please refresh the page")
@@ -178,7 +178,7 @@ export default function TradeComponent({
         }
         const jsn = await resp.json();
         const outcome = jsn.find((outcomeInfo: any) => outcomeInfo.outcomeId === selectedOutcomeData.id)
-        
+
         if (!outcome) {
           throw new Error("Could not find outcome price data")
         }
@@ -310,25 +310,45 @@ export default function TradeComponent({
                 className={` ${eventData?.outcomes.length! >= 3 ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-2 gap-2'
                   }`}
               >
-                {eventData?.outcomes.map((outcome, index) => (
-                  <Button
-                    key={outcome.id}
-                    className={`w-full py-5 bg-darkbg ${selectedOutcome === outcome.outcome_title
-                        ? index % 2 === 0
-                          ? 'bg-[#4ADE80] text-black hover:bg-[#4ADE80]'
-                          : 'bg-[#F87171] text-black hover:bg-[#F87171]'
-                        : index % 2 === 0
-                          ? 'text-[#4ADE80] hover:text-[#4ADE80] hover:bg-darkbg'
-                          : 'text-[#F87171] hover:bg-darkbg hover:text-[#F87171]'
-                      }`}
-                    onClick={() => setSelectedOutcome(outcome.outcome_title)}
-                  >
-                    <div className="flex gap-2 items-center">
-                      <span>{outcome.outcome_title}</span>
-                      <span className="text-xs flex">${calculateBuyPrice(outcome.id)}</span>
-                    </div>
-                  </Button>
-                ))}
+
+                {
+                  eventData?.outcomes
+                    .filter(outcome => outcome.outcome_title.toLowerCase().trim() === "yes")
+                    .map((outcome) => {
+                      return (
+                        <Button
+                          key={outcome.id}
+                          className={`w-full py-5 text-[#4ADE80] bg-darkbg ${selectedOutcome?.toLowerCase().trim() === "yes" ? "bg-[#4ADE80] text-black" : "text-[#4ADE80] bg-darkbg"}`}
+                          onClick={() => {setSelectedOutcome(outcome.outcome_title);console.log(selectedOutcome)}}
+                        >
+                          <div className="flex gap-2 items-center">
+                            <span>{outcome.outcome_title}</span>
+                            <span className="text-xs flex">${calculateBuyPrice(outcome.id)}</span>
+                          </div>
+                        </Button>
+                      );
+                    })
+                }
+
+                {
+                  eventData?.outcomes
+                    .filter(outcome => outcome.outcome_title.toLowerCase().trim() === "no")
+                    .map((outcome) => {
+                      return (
+                        <Button
+                          key={outcome.id}
+                          className={`w-full py-5 ${selectedOutcome?.toLowerCase().trim() === "no" ? "bg-[#F87171] text-black" : "text-[#F87171] bg-darkbg"}`}
+                          onClick={() => {setSelectedOutcome(outcome.outcome_title);console.log(selectedOutcome)}}
+                        >
+                          <div className="flex gap-2 items-center">
+                            <span>{outcome.outcome_title}</span>
+                            <span className="text-xs flex">${calculateBuyPrice(outcome.id)}</span>
+                          </div>
+                        </Button>
+                      );
+                    })
+                }
+
               </div>
             </div>
             {isBuySelected ? (

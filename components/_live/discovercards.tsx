@@ -31,7 +31,7 @@ export type CardData = {
     threads: number
     trades: number
   }
-  community : string[]
+  community: string[]
 }
 
 export const PredictionCard: React.FC<CardData> = ({
@@ -92,19 +92,40 @@ export const PredictionCard: React.FC<CardData> = ({
                 </div>
                 <div className="overflow-x-auto w-full pb-2">
                   <div className="grid grid-cols-2 gap-2 w-full">
-                    {outcomes.map((outcome, index) => (
-                      <Button
-                        key={outcome.id}
-                        variant="ghost"
-                        className={`h-10 text-sm font-medium w-full transition-colors duration-200 ${
-                          index % 2 === 0
-                            ? "bg-[#1F2133] group-hover:bg-[#1F4A37] hover:text-[#4ADE80] text-[#4ADE80]"
-                            : "bg-[#1F2133] group-hover:bg-[#482D33] hover:text-[#F87171] text-[#F87171]"
-                        }`}
-                      >
-                        Buy {outcome.outcome_title} {index % 2 === 0 ? "↑" : "↓"}
-                      </Button>
-                    ))}
+
+                    {
+                      outcomes
+                        .filter(outcome => outcome.outcome_title.toLowerCase().trim() === "yes")
+                        .map((outcome) => {
+                          return (
+                            <Button
+                              key={outcome.id}
+                              variant="ghost"
+                              className={`h-10 text-sm font-medium w-full transition-colors duration-200 "bg-[#1F2133] group-hover:bg-[#1F4A37] hover:text-[#4ADE80] text-[#4ADE80]`}
+                            >
+                              Buy {outcome.outcome_title} {outcome.outcome_title.toLowerCase().trim() === "yes" && "↑"}
+
+                            </Button>
+                          );
+                        })
+                    }
+
+                    {
+                      outcomes
+                        .filter(outcome => outcome.outcome_title.toLowerCase().trim() === "no")
+                        .map((outcome) => {
+                          return (
+                            <Button
+                              key={outcome.id}
+                              variant="ghost"
+                              className={`h-10 text-sm font-medium w-full transition-colors duration-200 bg-[#1F2133] group-hover:bg-[#482D33] hover:text-[#F87171] text-[#F87171]`}
+                            >
+                              Buy {outcome.outcome_title} {outcome.outcome_title.toLowerCase().trim() === "no" && "↓"}
+                            </Button>
+                          );
+                        })
+                    }
+
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-400">
@@ -163,7 +184,7 @@ export const CardSkeleton = () => (
   </Card>
 )
 
-const ITEMS_PER_PAGE = 9 
+const ITEMS_PER_PAGE = 9
 
 export default function Component() {
   const [isLoading, setIsLoading] = useState(true)
