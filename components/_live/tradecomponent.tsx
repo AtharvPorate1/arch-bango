@@ -74,6 +74,7 @@ export default function TradeComponent({
         setOutcomePrices(data)
       } catch (error) {
         console.error('Error fetching prices:', error)
+        toast.error("Failed to fetch current prices")
       }
     }
 
@@ -96,7 +97,8 @@ export default function TradeComponent({
         const result = await response.json()
         setPositionsData(result)
       } catch (err) {
-        console.error('Error fetching data:', err)
+        console.error('Error fetching trade history data:', err)
+        toast.error("Failed to load trade history")
       }
     }
 
@@ -110,16 +112,40 @@ export default function TradeComponent({
   }
 
   const handlePlaceOrder = async () => {
-    if (!address || isDisconnected || !selectedOutcome || !eventData) {
-      console.error("Cannot place order: User not authenticated or outcome not selected")
+    if (!address || isDisconnected) {
+      console.error("Cannot place order: User not authenticated")
       toast.error("Please connect your wallet to place an order")
+      return
+    }
+    
+    if (!selectedOutcome) {
+      console.error("Cannot place order: Outcome not selected")
+      toast.error("Please select an outcome before placing an order")
+      return
+    }
+    
+    if (!eventData) {
+      console.error("Cannot place order: Event data missing")
+      toast.error("Event data is missing. Please refresh the page")
+      return
+    }
+
+    if (parseFloat(price) <= 0) {
+      console.error("Invalid price amount")
+      toast.error("Please enter a valid price amount")
+      return
+    }
+
+    if (!isBuySelected && shares <= 0) {
+      console.error("Invalid shares amount")
+      toast.error("Please enter a valid number of shares")
       return
     }
 
     const accessToken = localStorage.getItem('accessToken')
     if (!accessToken) {
       console.error("Access token not found")
-      toast.error("Please connect your wallet")
+      toast.error("Authentication failed. Please reconnect your wallet")
       return
     }
 
@@ -127,6 +153,7 @@ export default function TradeComponent({
 
     if (!selectedOutcomeData) {
       console.error("Selected outcome not found in event data")
+      toast.error("Invalid outcome selected. Please try again")
       return
     }
 
@@ -144,64 +171,93 @@ export default function TradeComponent({
       // const txid = await window.unisat.sendBitcoin(contractAddress, parseInt(price))
 
       const getOutcomePriceEndpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/${eventData.id}`
-      const resp = await fetch(getOutcomePriceEndpoint);
-      const jsn = await resp.json();
-      const outcome = jsn.find((outcomeInfo: any) => outcomeInfo.outcomeId === selectedOutcomeData.id)
+      try {
+        const resp = await fetch(getOutcomePriceEndpoint);
+        if (!resp.ok) {
+          throw new Error(`Failed to fetch outcome price: ${resp.status}`)
+        }
+        const jsn = await resp.json();
+        const outcome = jsn.find((outcomeInfo: any) => outcomeInfo.outcomeId === selectedOutcomeData.id)
+        
+        if (!outcome) {
+          throw new Error("Could not find outcome price data")
+        }
 
-      if (isBuySelected) {
-        let result = await handleBuyOutcome(eventData.unique_id, Math.floor(outcome.price * parseFloat(price)), selectedOutcomeData.id - eventData.outcomes[0].id);
-        console.log(result, "++++++++");
-        if (!result) {
-          return;
+        if (isBuySelected) {
+          let result = await handleBuyOutcome(eventData.unique_id, Math.floor(outcome.price * parseFloat(price)), selectedOutcomeData.id - eventData.outcomes[0].id);
+          console.log(result, "++++++++");
+          if (!result) {
+            console.error("Buy outcome transaction failed")
+            toast.error("Buy transaction failed. Please try again")
+            return;
+          }
+        } else {
+          let result = await handleSellOutcome(eventData.unique_id, Math.floor(outcome.price * parseFloat(price)), selectedOutcomeData.id - eventData.outcomes[0].id);
+          console.log(result, "++++++++");
+          if (!result) {
+            console.error("Sell outcome transaction failed")
+            toast.error("Sell transaction failed. Please try again")
+            return;
+          }
         }
-      } else {
-        let result = await handleSellOutcome(eventData.unique_id, Math.floor(outcome.price * parseFloat(price)), selectedOutcomeData.id - eventData.outcomes[0].id);
-        console.log(result, "++++++++");
-        if (!result) {
-          return;
-        }
+      } catch (error) {
+        console.error("Error processing transaction:", error)
+        toast.error("Failed to process transaction. Please try again")
+        return;
       }
 
-      const endpoint = isBuySelected ? `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/buy` : `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/sell`
-      const body = isBuySelected
-        ? {
-          eventId: eventData.id,
-          outcomeId: selectedOutcomeData.id,
-          usdtAmount: price
-        }
-        : {
-          eventId: eventData.id,
-          outcomeId: selectedOutcomeData.id,
-          sharesToSell: shares
+      try {
+        const endpoint = isBuySelected ? `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/buy` : `${process.env.NEXT_PUBLIC_BACKEND_URL}trades/sell`
+        const body = isBuySelected
+          ? {
+            eventId: eventData.id,
+            outcomeId: selectedOutcomeData.id,
+            usdtAmount: price
+          }
+          : {
+            eventId: eventData.id,
+            outcomeId: selectedOutcomeData.id,
+            sharesToSell: shares
+          }
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify(body)
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          const errorMessage = errorData?.message || 'Failed to place order';
+          throw new Error(errorMessage);
         }
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify(body)
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to place order')
+        const data = await response.json()
+        console.log("Order placed successfully:", data)
+        toast.success("Order placed successfully")
+        setLastTradeTimestamp(Date.now())
+      } catch (error) {
+        console.error("Error placing order with API:", error)
+        toast.error("Failed to record your order. Please check your wallet")
       }
-
-      const data = await response.json()
-      console.log("Order placed successfully:", data)
-      toast.success("Order placed successfully")
-      setLastTradeTimestamp(Date.now())
     } catch (error) {
       console.error("Error placing order:", error)
-      toast.error("Some error occurred, order is not placed!")
+      toast.error("Failed to place order. Please try again later")
     }
   }
 
   useEffect(() => {
-    fetchTokenData();
-    const interval = setInterval(fetchTokenData, 5000);
-    return () => clearInterval(interval);
+    try {
+      fetchTokenData();
+      const interval = setInterval(fetchTokenData, 5000);
+      return () => clearInterval(interval);
+    } catch (error) {
+      console.error("Error fetching token data:", error)
+      toast.error("Failed to load token data")
+    }
   }, [fetchTokenData]);
 
 
@@ -436,4 +492,3 @@ export default function TradeComponent({
     </>
   )
 }
-
