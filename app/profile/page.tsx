@@ -94,7 +94,7 @@ const PredictionCard: React.FC<Event & { showEndButton: boolean }> = ({
             <CardContent className="p-1 border border-transparent group-hover:border-ow1 group-hover:border-[1px] transition-all duration-200">
               <div className="flex">
                 <div className="w-1/3 aspect-square border-none bg-[#2A2A2A] rounded-none flex items-center justify-center group-hover:bg-[#0C0C0C]">
-                  <img src={image || "/placeholder.svg"} alt="" className="w-full h-full object-cover" />
+                  <img src={image || "/chillguy.jpg"} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="w-2/3 px-2 py-1 flex flex-col justify-between">
                   <div className="flex flex-col justify-between">
@@ -297,7 +297,7 @@ export default function Component() {
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-1/2">
                 <div className="w-36 h-36 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
                   <Image
-                    src={userData?.profile_pic || "" || "" || "/placeholder.svg"}
+                    src={userData?.profile_pic || "" || "" || "/chillguy.jpg"}
                     alt="Profile"
                     width={150}
                     height={150}
@@ -307,7 +307,7 @@ export default function Component() {
                 <div className="flex flex-col gap-2">
                   <h2 className="text-[#F87171] text-md">@{userData?.username || "KryptoNight"}</h2>
                   <p className="text-gray-300 text-sm">
-                    {userData?.about || "Lorem Ipsum Dolor Sit Amet Consectetur. Posuere Lorem Enim Eu Nun (BIO)"}
+                    {userData?.about || "User Bio : Tell us more about you"}
                   </p>
                   <Button
                     variant="outline"
