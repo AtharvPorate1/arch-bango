@@ -496,9 +496,10 @@ export default function TradeComponent({
                     </Button>
                     <Button
                       onClick={() => {
-                        const userShare = selectedOutcome ? getUserSharesForOutcome(selectedOutcome) : null
+                   
+                        const userShare = selectedOutcome ? getUserSharesForOutcome(selectedOutcome).amount : null
                         if (userShare) {
-                          setShares(Math.floor(userShare.shares * 0.1))
+                          setShares(Math.floor(userShare * 0.1))
                         }
                       }}
                       size="sm"
@@ -508,9 +509,10 @@ export default function TradeComponent({
                     </Button>
                     <Button
                       onClick={() => {
-                        const userShare = selectedOutcome ? getUserSharesForOutcome(selectedOutcome) : null
+                        const userShare = selectedOutcome ? getUserSharesForOutcome(selectedOutcome).amount : null
+                        
                         if (userShare) {
-                          setShares(Math.floor(userShare.shares * 0.5))
+                          setShares(Math.floor(userShare * 0.5))
                         }
                       }}
                       size="sm"
@@ -520,9 +522,9 @@ export default function TradeComponent({
                     </Button>
                     <Button
                       onClick={() => {
-                        const userShare = selectedOutcome ? getUserSharesForOutcome(selectedOutcome) : null
+                        const userShare = selectedOutcome ? getUserSharesForOutcome(selectedOutcome).amount : null
                         if (userShare) {
-                          setShares(userShare.shares)
+                          setShares(userShare)
                         }
                       }}
                       size="sm"
