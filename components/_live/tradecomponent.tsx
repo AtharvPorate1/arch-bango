@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { toast } from "sonner"
-import { fetchTokenData } from "@/utils/rpcHelpers"
+import { fetchTokenData, handleBuyOutcome, handleSellOutcome } from "@/utils/rpcHelpers"
 
 type EventData = {
   id: number
@@ -228,31 +228,32 @@ export default function TradeComponent({
           throw new Error("Could not find outcome price data")
         }
 
-        // if (isBuySelected) {
-        //   const result = await handleBuyOutcome(
-        //     eventData.unique_id,
-        //     Math.floor(outcome.price * Number.parseFloat(price)),
-        //     selectedOutcomeData.id - eventData.outcomes[0].id,
-        //   )
-        //   console.log(result, "++++++++")
-        //   if (!result) {
-        //     console.error("Buy outcome transaction failed")
-        //     toast.error("Buy transaction failed. Please try again")
-        //     return
-        //   }
-        // } else {
-        //   const result = await handleSellOutcome(
-        //     eventData.unique_id,
-        //     Math.floor(outcome.price * Number.parseFloat(price)),
-        //     selectedOutcomeData.id - eventData.outcomes[0].id,
-        //   )
-        //   console.log(result, "++++++++")
-        //   if (!result) {
-        //     console.error("Sell outcome transaction failed")
-        //     toast.error("Sell transaction failed. Please try again")
-        //     return
-        //   }
-        // }
+        if (isBuySelected) {
+          const result = await handleBuyOutcome(
+            eventData.unique_id,
+            Math.floor(outcome.price * Number.parseFloat(price)),
+            selectedOutcomeData.id - eventData.outcomes[0].id,
+          )
+          console.log(result, "++++++++")
+          if (!result) {
+            console.error("Buy outcome transaction failed")
+            toast.error("Buy transaction failed. Please try again")
+            return
+          }
+        } else {
+          const result = await handleSellOutcome(
+            eventData.unique_id,
+            Math.floor(outcome.price * Number.parseFloat(price)),
+            selectedOutcomeData.id - eventData.outcomes[0].id,
+          )
+          console.log(result, "++++++++")
+          if (!result) {
+            console.error("Sell outcome transaction failed")
+            toast.error("Sell transaction failed. Please try again")
+            return
+          }
+        }
+
       } catch (error) {
         console.error("Error processing transaction:", error)
         toast.error("Failed to process transaction. Please try again")
