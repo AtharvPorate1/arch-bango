@@ -7,6 +7,7 @@ import Footer from '@/components/_layout/Footer'
 import { toast } from 'sonner'
 import FAQ from '@/components/_layout/faqs'
 import HeroSection from '@/components/_live/hero'
+import PlatformStats from '@/components/PlatformStats'
 // import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 // import { ChevronRight, Search } from 'lucide-react'
 // import { Button } from "@/components/ui/button"
@@ -189,6 +190,11 @@ export default function DiscoverSection() {
       <div className='md:translate-y-0 -translate-y-14'>
         <DiscoverCards/>
       </div>
+
+      <div id='platform-stats'>
+            <PlatformStats/>
+      </div>
+
       <div id='faq'>
       <FAQ/>
       </div>
