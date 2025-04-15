@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { CircleHelp, House, Menu, Paperclip, X } from "lucide-react"
+import { CircleHelp, House, Menu, Paperclip, X, Plus } from "lucide-react"
 import Image from "next/image"
 import ConnectButton from "./ConnectButton"
 import Cash from "./cash"
@@ -63,6 +63,16 @@ export default function Navbar() {
                   </div>
                 </Link>
               </div>
+              <div>
+                <Link href="/create-event">
+                  <div className="flex flex-col dm-sans hover:cursor-pointer hover:bg-[#191B2A] w-20 p-2 rounded-sm cursor-pointer duration-300 items-center">
+                    <div className="text-md font-medium text-center">
+                      Create Market
+                    </div>
+                    <div className="text-gray-400 text-xs mt-1 text-center">(Beta)</div>
+                  </div>
+                </Link>
+              </div>
             </div>
 
             <Cash />
@@ -106,6 +116,13 @@ export default function Navbar() {
             >
               <House size={20} />
               <span>Home</span>
+            </Link>
+            <Link 
+              href="/create-event"
+              className="flex items-center gap-3 py-3 px-4 text-[#8F8F8F] hover:bg-[#191B2A] transition-colors"
+            >
+              <House size={20} />
+              <span>Create Market (beta)</span>
             </Link>
           </div>
         )}

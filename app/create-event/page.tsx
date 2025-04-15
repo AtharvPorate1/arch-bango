@@ -132,7 +132,7 @@ export default function Component() {
       });
 
       console.log(uid);
-      return;
+
       if (result.length < 60) {
         toast.error("Couldn't call smart contract");
         return;
@@ -304,12 +304,12 @@ export default function Component() {
             >
               {isSubmitting ? 'Creating Event...' : 'Create Event'}
             </Button>
-            <Button
+            {/* <Button
               onClick={handleCreateNewToken}
               className="w-full bg-o1 hover:bg-orange-600"
             >
               Create Token
-            </Button>
+            </Button> */}
           </form>
         </CardContent>
       </Card>
