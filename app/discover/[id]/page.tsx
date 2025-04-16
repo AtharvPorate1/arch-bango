@@ -198,6 +198,7 @@ export default function EventDetailPage() {
                       className="h-full w-full object-cover rounded-lg"
                       width={200}
                       height={200}
+                      unoptimized={true}
                     />
                   </div>
                 )}
