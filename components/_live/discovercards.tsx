@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ChevronLeft, ChevronRight, MessageSquare, Search, Star } from 'lucide-react'
 import { Input } from '../ui/input'
 import { Badge } from "@/components/ui/badge"
+import { formatCurrency } from '@/utils/base'
 
 
 export type CardData = {
@@ -31,7 +32,8 @@ export type CardData = {
     threads: number
     trades: number
   }
-  community: string[]
+  community: string[],
+  volume: string
 }
 
 export const PredictionCard: React.FC<CardData> = ({
@@ -42,6 +44,7 @@ export const PredictionCard: React.FC<CardData> = ({
   description,
   _count,
   community, // New prop for tags
+  volume,
 }) => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
   const [showTooltip, setShowTooltip] = useState(false)
@@ -129,7 +132,7 @@ export const PredictionCard: React.FC<CardData> = ({
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-400">
-                  <span>$500K VOL.</span>
+                  <span>{formatCurrency(volume)} VOL.</span>
                   <div className="flex items-center gap-2">
                     <span className="flex items-center gap-1">
                       <MessageSquare className="h-3 w-3" />

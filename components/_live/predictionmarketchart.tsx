@@ -6,6 +6,7 @@ import { Line } from 'react-chartjs-2'
 import { Button } from "@/components/ui/button"
 import { RefreshCcw, Settings } from 'lucide-react'
 import { Circle } from 'lucide-react'
+import { formatCurrency } from '@/utils/base'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -26,7 +27,7 @@ interface Outcome {
 
 const colors = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
 
-export default function PredictionMarketChart({id}: {id: number}) {
+export default function PredictionMarketChart({id, volume}: {id: number, volume: string}) {
   const [selectedPeriod, setSelectedPeriod] = useState('1D')
   const [chartData, setChartData] = useState<Outcome[]>([])
   const [displayedChartData, setDisplayedChartData] = useState<Outcome[]>([])
@@ -235,7 +236,7 @@ export default function PredictionMarketChart({id}: {id: number}) {
         <div className="flex items-center gap-3">
           <Circle className="w-3 h-3 fill-orange-400 text-orange-400" />
           <div className="flex items-center gap-2">
-            <span className="text-gray-300 text-sm font-medium">Volume: $300k</span>
+            <span className="text-gray-300 text-sm font-medium">Volume: {formatCurrency(volume)}</span>
             <span className="text-gray-500 text-sm">Ending On 04 Nov, 2024</span>
           </div>
         </div>

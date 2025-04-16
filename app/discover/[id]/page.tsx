@@ -13,6 +13,7 @@ import PredictionMarketChart from "@/components/_live/predictionmarketchart"
 import TradeComponent from "@/components/_live/tradecomponent"
 import { request } from "sats-connect"
 import { walletStore } from "@/store/authStore"
+import { formatCurrency } from "@/utils/base"
 
 type EventData = {
   id: number
@@ -34,7 +35,7 @@ type EventData = {
   user:{
     username:string
   }
-
+  volume: string
 }
 
 export default function EventDetailPage() {
@@ -175,7 +176,7 @@ export default function EventDetailPage() {
                 {isLoading ? (
                   <Skeleton className="w-full h-[480px]" />
                 ) : (
-                  <PredictionMarketChart id={id} />
+                  <PredictionMarketChart id={id} volume={eventData?.volume || "0"} />
                 )}
               </CardContent>
             </Card>
@@ -215,7 +216,7 @@ export default function EventDetailPage() {
                         <div className="text-sm text-[#89A2ED]">{eventData?.user.username}</div>
                         <div className="text-sm text-[#89A2ED]">
                           Ends on {new Date(eventData?.expiry_date || '').toLocaleDateString()}
-                          <span className="block sm:inline sm:ml-4 text-o1">Volume: $300k</span>
+                          <span className="block sm:inline sm:ml-4 text-o1">Volume: {formatCurrency(eventData?.volume)}</span>
                         </div>
                       </div>
                       <CardTitle className="text-lg sm:text-xl break-words">{eventData?.question}</CardTitle>
